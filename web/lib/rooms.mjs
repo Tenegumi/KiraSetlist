@@ -6,7 +6,12 @@ export function createRoom(){
  const id=randomBytes(18).toString('hex'),owner=randomBytes(32).toString('base64url'),view=randomBytes(24).toString('base64url');
  return {id,owner,view,room:{version:1,ownerHash:digest(owner),viewHash:digest(view),viewKey:view,createdAt:new Date().toISOString(),state:freshState(),artwork:{}}};
 }
-export function access(room,token){return match(token,room.ownerHash)?'owner':match(token,room.viewHash)?'viewer':null;}
+export function keysRevoked(room,cutoff=process.env.ROOM_KEYS_REVOKED_BEFORE){
+ if(room.credentialsRevokedAt)return true;
+ const before=Date.parse(cutoff||''),created=Date.parse(room.createdAt||'');
+ return Number.isFinite(before)&&(!Number.isFinite(created)||created<=before);
+}
+export function access(room,token){if(keysRevoked(room))return null;return match(token,room.ownerHash)?'owner':match(token,room.viewHash)?'viewer':null;}
 export function payload(room){const s=room.state;return {...s,customSongs:undefined,history:undefined,canUndo:s.history.length>0,songs:(s.customSongs||[]).map(song=>({...song,artwork:room.artwork[song.id]||{status:'missing',image:null,candidates:[]}})),artworkOverrides:room.artwork};}
 export function mutate(room,action,songs){
  if(room.state.queue.length>=250&&['add','custom-add'].includes(action.type))throw Error('리스트는 최대 250곡까지 추가할 수 있어요.');

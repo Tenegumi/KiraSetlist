@@ -6,7 +6,8 @@ let catalogValue,catalogTime=0,catalogRequest,hub;
 async function responseError(response){
  let data;try{data=await response.json();}catch{}
  const error=Error(data?.error||(response.status===429?'요청이 잠시 몰렸어요. 1분 후 다시 눌러 주세요.':'서버 연결을 확인해 주세요.'));
- error.retryAfter=Number(data?.retryAfter||response.headers.get('Retry-After'))||0;return error;
+ error.retryAfter=Number(data?.retryAfter||response.headers.get('Retry-After'))||0;
+ error.terminal=[401,403,404,410].includes(response.status);return error;
 }
 async function catalog(){
  if(catalogValue&&Date.now()-catalogTime<300000)return catalogValue;
@@ -68,7 +69,7 @@ class CloudHub{
     for(let line of complete){
      line=line.replace(/\r$/,'');
      if(line===''){
-      if(lines.length){const data=JSON.parse(lines.join('\n'));if(event==='message')await this.accept(data);else if(event==='connection-error')throw Error(data.error);}
+      if(lines.length){const data=JSON.parse(lines.join('\n'));if(event==='message')await this.accept(data);else if(event==='connection-error'){const error=Error(data.error);error.terminal=!!data.terminal;throw error;}}
       event='message';lines=[];
      }else if(line.startsWith('event:'))event=line.slice(6).trim();
      else if(line.startsWith('data:'))lines.push(line.slice(5).trimStart());
@@ -79,7 +80,8 @@ class CloudHub{
    if(!this.closed){
     for(const listener of this.listeners)listener.onerror?.({error});
     const el=document.getElementById('connection');if(el)el.textContent=`${error.message}${this.snapshot?' · 방송 화면은 마지막 곡을 유지해요.':''}`;
-    this.delay=navigator.onLine===false?5000:Math.max(error.retryAfter*1000||0,Math.min(this.delay*2,60000));
+    if(error.terminal){this.closed=true;this.abort?.abort();clearTimeout(this.timer);}
+    else this.delay=navigator.onLine===false?5000:Math.max(error.retryAfter*1000||0,Math.min(this.delay*2,60000));
    }
   }finally{clearTimeout(watchdog);await reader?.cancel().catch(()=>{});this.connecting=false;}
   if(!this.closed&&this.listeners.size)this.timer=setTimeout(()=>this.connect(),this.reconnectRequested?0:this.delay);

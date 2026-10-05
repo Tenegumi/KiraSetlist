@@ -1,7 +1,7 @@
 import {BlobPreconditionFailedError} from '@vercel/blob';
 import {Readable} from 'node:stream';
 import {randomUUID} from 'node:crypto';
-import {createRoom,access,payload,mutate} from '../lib/rooms.mjs';
+import {createRoom,access,keysRevoked,payload,mutate} from '../lib/rooms.mjs';
 import {liveCatalog,syncNotion} from '../lib/live-catalog.mjs';
 import {authorizeNotionSync} from '../lib/manual-sync.mjs';
 import {readBody,ClientError} from '../lib/request.mjs';
@@ -26,6 +26,8 @@ export default async function handler(req,res){
  const url=new URL(req.url,'https://kira.invalid'),op=url.searchParams.get('op')||req.url.split('?')[0].replace(/^\/api\/?/,'');
  if(op==='health'){const health=await storageHealth();return json(res,health.ready?200:503,{...health,mode:'web',notionSync:!!(process.env.NOTION_SYNC_SECRET||process.env.CRON_SECRET),notionSyncMode:'manual'});}
  try{
+  // Old clients poll with a revision every second. Reject before any storage read.
+  if(op==='state'&&req.method==='GET'&&url.searchParams.has('revision'))return json(res,410,{code:'legacy_polling_removed',error:'이전 반복 조회 방식은 종료됐어요. OBS 독과 브라우저 소스를 새로고침해 주세요.'});
   if(op==='sync-notion'){
    res.setHeader('Allow','POST');
    await authorizeNotionSync(req);
@@ -46,6 +48,7 @@ export default async function handler(req,res){
   const token=req.headers.authorization?.replace(/^Bearer /,'')||(op==='image'?url.searchParams.get('key'):null);
   if(!/^(?:[A-Za-z0-9_-]{32}|[A-Za-z0-9_-]{43})$/.test(token||''))return json(res,403,{error:'접근할 수 없는 주소예요. 저장해 둔 OBS 주소를 사용해 주세요.'});
   const data=await read(id,op==='state'&&req.method==='GET');if(!data)return json(res,404,{error:'방송 공간을 찾을 수 없어요.'});
+  if(keysRevoked(data.room))return json(res,403,{code:'room_keys_revoked',error:'이 OBS 주소는 폐기됐어요. 첫 화면에서 새 링크를 발급해 주세요.'});
   const role=access(data.room,token);
   if(!role)return json(res,403,{error:'접근할 수 없는 주소예요. 저장해 둔 OBS 주소를 사용해 주세요.'});
   if(op==='events'&&req.method==='GET')return await serveEvents(req,res,id,token,read);
@@ -56,7 +59,6 @@ export default async function handler(req,res){
   }
   if(op==='state'&&req.method==='GET'){
    res.setHeader('Cache-Control','no-store');
-   if(url.searchParams.get('revision')===String(data.room.state.revision)){res.statusCode=204;return res.end();}
    return json(res,200,payload(data.room));
   }
   if(role!=='owner')return json(res,403,{error:'방송 화면 주소로는 조작할 수 없어요.'});
