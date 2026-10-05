@@ -1,2 +1,14 @@
-{"name":"kira-setlist","version":"1.1.0","private":true,"type":"module","scripts":{"start":"node server.mjs","test":"node --test test/*.test.mjs","artwork":"node scripts/artwork.mjs"},"engines":{"node":">=22"}}
-
+{
+  "name": "kira-setlist-integrated",
+  "version": "1.2.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "node app/server.mjs",
+    "test": "node --test app/test/*.test.mjs && node test-install.mjs",
+    "test:original": "node --test test/*.test.mjs"
+  }
+}

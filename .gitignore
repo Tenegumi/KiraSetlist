@@ -15,3 +15,11 @@ docs/tutorial/
 public/guide-assets/guide-mascot.png
 scripts/export-tutorial.mjs
 scripts/build-motion-guide.mjs
+
+# Integrated release runtime and personal data.
+app/runtime/*
+!app/runtime/LICENSE.txt
+app/data/state.json*
+app/data/*.tmp
+app/public/artwork/*
+!app/public/artwork/.gitkeep

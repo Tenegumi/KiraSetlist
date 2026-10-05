@@ -1,0 +1,8 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>
+html,body{margin:0;width:100%;height:100%;background:transparent;color:#d6bee8;font:13px 'Segoe UI','Malgun Gothic',sans-serif}#waiting{padding:22px;line-height:1.8}small{color:#a99ab4}
+</style></head><body><div id="waiting">키라 통합 셋리스트 연결 중…<br><small>OBS 스크립트에 kira-unified.lua를 등록해 주세요.</small></div><script>
+const target='/control?dock=1';
+if(target==='/overlay')document.getElementById('waiting').hidden=true;
+async function connect(){try{const res=await fetch('http://127.0.0.1:4320/api/health',{cache:'no-store'});if(res.ok&&(await res.json()).app==='kira-setlist-integrated'){location.replace('http://127.0.0.1:4320'+target);return;}}catch{}setTimeout(connect,700);}
+connect();
+</script></body></html>

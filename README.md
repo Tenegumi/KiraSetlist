@@ -1,50 +1,76 @@
-# Kira Setlist · 키라 셋리스트
+# Kira Setlist · 원본 + 앰프 DLC
 
-**OBS 안에서 곡을 추가하고 조작하는 방송용 셋리스트.** 세이로쿠 키라의 퍼플·블랙 컬러와 작은 레드 체크 포인트, 회전 앨범 아트를 담았습니다.
+**오늘 부를 곡을 담고, OBS 안에서 바로 넘겨요.** 깔끔한 원본과 밴드 스타일의 앰프 DLC를 하나의 설치본에서 골라 쓸 수 있어요.
 
-![키라 방송 적용 예시](public/guide-assets/broadcast-example.png)
+![앰프 DLC를 적용한 실제 OBS 출력](app/public/guide-assets/unified-amp.png)
 
-**[설치 ZIP 다운로드](https://github.com/Tenegumi/KiraSetlist/releases/latest)** · **[스크린샷 설치·사용 가이드](docs/INSTALL.md)** · **[움직이는 도트 남궁우 튜토리얼](docs/tutorial-motion/README.md)** · [개발·데이터 안내](docs/DEVELOPMENT.md)
+**[설치 ZIP 받기](https://github.com/Tenegumi/KiraSetlist/releases/download/v1.2.0/KiraSetlist-Integrated-1.2.0.zip)** · **[그림으로 따라 하기](docs/INSTALL.md)** · **[가이드 영상 받기](https://github.com/Tenegumi/KiraSetlist/releases/download/v1.2.0/kira-integrated-tutorial.mp4)** · **[영상·이미지 128장 묶음](https://github.com/Tenegumi/KiraSetlist/releases/download/v1.2.0/KiraSetlist-Integrated-Guide.zip)**
 
-## 처음 설치하기
+## 설치는 이렇게 해요
 
-1. 다운로드 페이지의 **Assets → KiraSetlist-OBS.zip**을 받아 전부 압축 해제합니다.
-2. `KiraSetlist-OBS/install.cmd`를 실행합니다. Node 런타임이 포함되어 있습니다.
-3. 설치 폴더의 **OBS-guide.html**을 열고 OBS에 스크립트·조작 독·오버레이를 한 번 등록합니다.
-4. 다음부터는 **OBS만 실행**합니다. 별도 웹 브라우저나 터미널을 열 필요가 없습니다.
+1. 방송이 끝나면 **OBS를 닫아요**.
+2. 위의 설치 ZIP을 받아 **모두 압축 풀기**를 해요.
+3. 폴더 안의 **설치하기.exe**를 열고 **설치하고 OBS에 적용**을 눌러요.
+4. OBS가 열리면 **키라 통합 셋리스트 (원본 + DLC)** 장면 모음과 조작 독을 확인해요.
 
-Windows용입니다. OBS 32.2.2에서 확인했습니다. 기본 설치 폴더는 `%USERPROFILE%\KiraSetlist`입니다. **Source code** ZIP은 개발용이며 설치 패키지와 다릅니다.
+<img src="app/public/guide-assets/installer.png" alt="설치하고 OBS에 적용 버튼이 있는 실제 설치 프로그램 화면" width="540">
 
-## 조작 화면
+다음부터는 **OBS만 켜면 돼요**. 실행에 필요한 Node도 들어 있고, 조작 독·오버레이·자동 시작 스크립트가 함께 등록돼요. Windows용이며 OBS 32.2.2에서 확인했어요. GitHub의 **Source code**는 개발용이니 위의 **설치 ZIP**을 받아 주세요.
 
-<img src="public/guide-assets/dock-list.png" alt="오늘의 리스트 조작 패널" width="280"> <img src="public/guide-assets/songbook-search.png" alt="노래책 검색과 추가" width="280">
+## 오늘의 디자인은 버튼으로
 
-노래책에서 검색해 **+**로 추가하고, 리스트에서 **부르기**로 현재 곡을 지정합니다. 노래가 끝나면 **완료 · 다음 곡**, 실수하면 **되돌리기**를 누릅니다. 노래책에 없는 신청곡은 **+ 직접 추가**로 넣을 수 있습니다.
+<img src="app/public/guide-assets/design-switch.png" alt="OBS 독의 원본 / 앰프 DLC 전환 버튼" width="460">
 
-## 방송 화면 설정
+**원본**은 반투명 셋리스트와 회전 CD, **앰프 DLC**는 컷아웃 앰프·붉은 하트 슬리브·반쯤 꺼낸 LP·보라색 사인이에요. DLC에서 곡이 바뀌면 LP와 곡 정보가 함께 튕기듯 움직여요. 이전 곡과 대기 곡은 제목만 보여 주고, 현재 곡에는 가수도 표시해요.
 
-<img src="public/guide-assets/panel-current.png" alt="현재 곡만 표시" width="280"> <img src="public/guide-assets/panel-full.png" alt="이전·현재·다음 곡 표시" width="280">
+두 디자인은 **노래책·직접 추가한 곡·오늘의 리스트·현재 곡을 공유**해요. 크기와 투명도 같은 화면 설정은 각각 기억하니, 전환할 때마다 다시 맞출 필요 없어요.
 
-| 기능 | 지원 범위 |
+<details><summary>원본 디자인도 보기</summary>
+
+![원본을 적용한 실제 OBS 출력. 방송 배경이 그대로 보입니다.](app/public/guide-assets/unified-original.png)
+
+</details>
+
+## 방송 중에는 세 가지만 기억해요
+
+<img src="app/public/guide-assets/search-results.png" alt="노래책 검색 결과와 곡 추가 버튼" width="360"> <img src="app/public/guide-assets/custom-song.png" alt="노래책에 없는 곡을 직접 추가하는 창" width="360">
+
+- **담기:** 노래책에서 검색하고 곡 옆의 **+**를 눌러요. 없는 신청곡은 **+ 직접 추가**로 넣어요.
+- **부르기:** 리스트에서 **부르기**를 누르면 방송 화면의 현재 곡이 바뀌어요.
+- **넘기기:** 다 부르면 **완료 · 다음 곡**, 실수하면 **되돌리기**를 눌러요.
+
+이미지가 없는 곡은 키라 기본 CD가 대신 나와요. 앨범 이미지를 눌러 후보를 고르거나 내 이미지를 등록할 수도 있어요.
+
+## 화면은 내 방송에 맞춰요
+
+<img src="app/public/guide-assets/panel-current.png" alt="DLC의 현재 곡만 표시" width="320"> <img src="app/public/guide-assets/panel-full.png" alt="DLC의 이전·현재·다음 곡 표시. 대기와 이전은 제목만 나옵니다." width="320">
+
+| 맞출 수 있는 것 | 설정 |
 | --- | --- |
-| 표시 곡 수 | 현재 곡만, 이전 1곡 ON/OFF, 다음 0~5곡 |
-| 크기·위치 | 우측 패널 50~120%, 오른쪽·위쪽 여백, 하단 정보 크기 별도 설정 |
-| 스타일 | 반투명도 0~100%, 딥 퍼플 / 라벤더 글라스, 작은 체크 포인트 |
-| 좌측 하단 정보 | ON/OFF |
-| 앨범 아트 | 현재 곡 디스크 회전, 미등록·로딩 실패 시 키라 기본 CD |
-| 노래책 | 211곡, 곡명·가수·초성 검색, 장르 필터, 직접 추가 곡 저장 |
-| 리스트 | 순서 변경, 완료, 되돌리기, 자동 저장 |
+| 보이는 곡 수 | 현재 곡만 / 이전 1곡 ON·OFF / 다음 0~5곡 |
+| 오른쪽 창 | 크기·위치·투명도 / DLC 앰프 너비 |
+| 왼쪽 하단 | 곡 정보 ON·OFF·크기 / DLC LP 슬리브·사인 색 |
+| 앨범 아트 | 회전 ON·OFF, 한 바퀴 15~60초 |
+| 방송 화면 | 두 디자인 모두 **3840×2160 소스 · 60fps**, 기존 캔버스에 맞춰 축소 |
 
-음원 재생·자동 곡 감지·가사 싱크 기능은 포함하지 않습니다. 표시 설정을 바꿔도 실제 리스트와 현재 곡은 유지됩니다.
+표시를 줄여도 실제 곡 목록은 그대로 남아요. 음원 재생·자동 곡 감지·가사 싱크는 포함하지 않아요.
+
+## 남궁우가 움직이며 알려줘요
+
+![도트 남궁우의 움직이는 통합본 튜토리얼](docs/tutorial-motion/examples/movement.gif)
+
+**32장면 · 3분 12초 · Full HD 무음 영상**이에요. 설치, 디자인 전환, 신청곡 추가, 현재 곡 지정, 화면 설정, 업데이트와 백업까지 알려줘요. **1920×1080 이미지 128장**, 자막 SRT, 내레이션 대사, 단계별로 넘겨 보는 HTML도 함께 받아 쓸 수 있어요.
+
+[영상·이미지 미리 보기](docs/tutorial-motion/README.md) · [편집할 때 사용하는 방법](docs/MEDIA.md)
+
+**전환 모션만 보기:** [원본 60fps 샘플](https://github.com/Tenegumi/KiraSetlist/releases/download/v1.2.0/KiraSetlist-Original-Motion-60fps.mp4) · [DLC 60fps 샘플](https://github.com/Tenegumi/KiraSetlist/releases/download/v1.2.0/KiraSetlist-DLC-Motion-60fps.mp4). 각 8초, 예시 목록에서 두 번 곡을 넘기는 실제 렌더러 화면이에요.
 
 ## 업데이트와 백업
 
-**OBS를 닫은 뒤** 새 ZIP의 `install.cmd`를 다시 실행하세요. 같은 설치 경로를 사용하면 개인 리스트·설정·직접 등록한 곡과 이미지가 보존됩니다. 백업은 설치 폴더의 `data`와 `public/artwork`를 함께 복사합니다.
+OBS를 닫고 새 ZIP의 **설치하기.exe**를 실행해요. 같은 설치 폴더를 쓰면 개인 목록·직접 등록한 곡·이미지·설정이 보존돼요. 통합본은 기본적으로 `사용자 폴더/KiraSetlistUnified`에 설치돼요. 기존 원본 또는 단독 DLC가 있으면 첫 설치 때 저장한 데이터도 가져와요.
 
-설치 폴더의 **OBS-guide.html**과 조작 패널의 **설치·사용 안내**에서 스크린샷 가이드를 볼 수 있습니다.
+백업은 설치 폴더의 **data**와 **public/artwork**를 함께 복사해 두면 돼요. 기존 장면 모음은 보관하며, OBS 설정 백업도 설치할 때 만들어 둬요. [문제가 생겼을 때](docs/INSTALL.md#잘-안-보이면-여기부터)
 
-## 개발
+노래책은 2026-10-05에 가져온 **211곡 스냅샷**이에요. Notion의 변경 사항을 자동으로 동기화하지 않아요. 외부 앨범 이미지는 인터넷이 필요하고 직접 등록한 이미지는 PC에 저장돼요.
 
-Node.js 22 이상에서 `npm start`, 자동 테스트는 `npm test`로 실행합니다. Windows 배포 ZIP은 `powershell -File scripts/package-obs.ps1`로 만듭니다. 자세한 구조와 테스트 방법은 [개발 안내](docs/DEVELOPMENT.md)를 참고하세요.
-
-방송 예시는 제공받은 스크린샷이며, 조작·설정 이미지는 실제 앱을 별도 테스트 환경에서 캡처한 화면입니다. 노래책은 2026-10-05에 가져온 스냅샷이며 Notion 변경 사항을 자동 동기화하지 않습니다. 외부 앨범 아트는 URL로 연결되어 인터넷이 필요합니다.
+[개발·저장 구조](docs/DEVELOPMENT.md) · [v1.2.0 변경 사항](docs/RELEASE-NOTES.md)

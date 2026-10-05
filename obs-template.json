@@ -1,0 +1,94 @@
+{
+  "browser": {
+    "prev_ver": 537001986,
+    "name": "키라 셋리스트 오버레이",
+    "uuid": "6fcd1e95-9f8e-4e7a-8514-922fb0756375",
+    "id": "browser_source",
+    "versioned_id": "browser_source",
+    "settings": {
+      "is_local_file": true,
+      "width": 1920,
+      "height": 1080,
+      "fps": 30,
+      "fps_custom": true,
+      "shutdown": false
+    },
+    "mixers": 255,
+    "sync": 0,
+    "flags": 0,
+    "volume": 1,
+    "balance": 0.5,
+    "enabled": true,
+    "muted": false,
+    "push-to-mute": false,
+    "push-to-mute-delay": 0,
+    "push-to-talk": false,
+    "push-to-talk-delay": 0,
+    "hotkeys": {
+      "libobs.mute": [],
+      "libobs.unmute": [],
+      "libobs.push-to-mute": [],
+      "libobs.push-to-talk": [],
+      "ObsBrowser.Refresh": []
+    },
+    "deinterlace_mode": 0,
+    "deinterlace_field_order": 0,
+    "monitoring_type": 0,
+    "private_settings": {}
+  },
+  "item": {
+    "name": "키라 셋리스트 오버레이",
+    "source_uuid": "6fcd1e95-9f8e-4e7a-8514-922fb0756375",
+    "visible": true,
+    "locked": false,
+    "rot": 0,
+    "scale_ref": {
+      "x": 1920,
+      "y": 1080
+    },
+    "align": 5,
+    "bounds_type": 0,
+    "bounds_align": 0,
+    "bounds_crop": false,
+    "crop_left": 0,
+    "crop_top": 0,
+    "crop_right": 0,
+    "crop_bottom": 0,
+    "id": 1,
+    "group_item_backup": false,
+    "pos": {
+      "x": 0,
+      "y": -10
+    },
+    "pos_rel": {
+      "x": -1.7777777910232544,
+      "y": -1.0185185670852661
+    },
+    "scale": {
+      "x": 1.0270832777023315,
+      "y": 1.0268518924713135
+    },
+    "scale_rel": {
+      "x": 1.0270832777023315,
+      "y": 1.0268518924713135
+    },
+    "bounds": {
+      "x": 0,
+      "y": 0
+    },
+    "bounds_rel": {
+      "x": 0,
+      "y": 0
+    },
+    "scale_filter": "disable",
+    "blend_method": "default",
+    "blend_type": "normal",
+    "show_transition": {
+      "duration": 0
+    },
+    "hide_transition": {
+      "duration": 0
+    },
+    "private_settings": {}
+  }
+}

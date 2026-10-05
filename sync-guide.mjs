@@ -1,0 +1,20 @@
+import fs from 'node:fs';import path from 'node:path';import {fileURLToPath} from 'node:url';
+const root=path.dirname(fileURLToPath(import.meta.url)),publicDir=path.join(root,'app/public'),base='https://github.com/Tenegumi/KiraSetlist/blob/master/docs/';
+const esc=t=>t.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+function url(u){if(u.startsWith('../app/public/'))return u.slice('../app/public/'.length);if(u.startsWith('tutorial-motion/examples/')){const name='tutorial-'+path.basename(u);fs.copyFileSync(path.join(root,'docs',u),path.join(publicDir,'guide-assets',name));return 'guide-assets/'+name;}if(u==='../README.md')return 'https://github.com/Tenegumi/KiraSetlist';if(u.endsWith('.md'))return base+u;return u;}
+const inline=t=>esc(t).replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\[([^\]]+)\]\(([^)]+)\)/g,(_,label,u)=>`<a href="${url(u)}" target="_blank" rel="noopener">${label}</a>`);
+let html='',section=false,table=false;
+for(const line of fs.readFileSync(path.join(root,'docs/INSTALL.md'),'utf8').split(/\r?\n/)){
+ if(line.startsWith('|')){if(/^[|\s:-]+$/.test(line))continue;if(!table){html+='<table>';table=true;}html+='<tr>'+line.split('|').slice(1,-1).map(t=>'<td>'+inline(t.trim())+'</td>').join('')+'</tr>';continue;}
+ if(table){html+='</table>';table=false;}
+ if(!line.trim())continue;
+ if(line.startsWith('# ')){html+='<header><span class="pixel-guide" aria-hidden="true"></span><div><p class="eyebrow">KIRA · ORIGINAL + AMPLIFIER DLC</p><h1>'+inline(line.slice(2))+'</h1></div></header>';continue;}
+ if(line.startsWith('## ')){if(section)html+='</section>';section=true;html+='<section><h2>'+inline(line.slice(3))+'</h2>';continue;}
+ if(line.startsWith('![')){const m=line.match(/^!\[([^\]]+)\]\(([^)]+)\)/);html+=`<img src="${url(m[2])}" alt="${esc(m[1])}">`;continue;}
+ if(line.startsWith('<img')){html+=line.replace(/src="([^"]+)"/g,(_,u)=>`src="${url(u)}"`);continue;}
+ html+='<p>'+inline(line)+'</p>';
+}
+if(table)html+='</table>';if(section)html+='</section>';
+fs.writeFileSync(path.join(publicDir,'guide.html'),'<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>남궁우와 시작하는 키라 통합 셋리스트</title><link rel="stylesheet" href="guide.css"></head><body><main>'+html+'<p><a href="/control?dock=1">조작 패널로 돌아가기</a></p></main></body></html>');
+fs.writeFileSync(path.join(publicDir,'guide.css'),`*{box-sizing:border-box}body{margin:0;background:#faf7f2;color:#36263e;font:16px/1.85 'Segoe UI','Malgun Gothic',sans-serif}main{max-width:940px;margin:auto;padding:30px 22px}header{display:flex;gap:22px;align-items:center}h1{font-size:29px;line-height:1.4;margin:0 0 22px}h2{font-size:22px;line-height:1.5;margin:0 0 16px}.eyebrow{font-size:11px;letter-spacing:.12em;color:#90557a}.pixel-guide{display:block;flex-shrink:0;width:95px;height:134px;background:url('guide-assets/namgungwoo-pixel-sheet.png') 100% 0/200% 200%;image-rendering:pixelated}section{margin:26px 0;padding:23px;background:white;border:1px solid #ded0e3;border-radius:12px;box-shadow:3px 4px 0 #e7dce866}strong,a{color:#834b9b}p{margin:12px 0}img{display:block;max-width:100%;height:auto;margin:20px auto;border:1px solid #dbcbe1;border-radius:8px}code{font-size:14px;overflow-wrap:anywhere;background:#f0e7f2;padding:2px 4px;border-radius:3px}table{width:100%;border-collapse:collapse;font-size:14px}td{border-bottom:1px solid #e5d9e8;padding:12px 8px;vertical-align:top}td:first-child{width:30%;font-weight:600}tr:first-child td{color:#855398;background:#f4eef7}@media(max-width:500px){main{padding:20px 14px}section{padding:19px 15px}h1{font-size:24px}h2{font-size:20px}header{gap:10px}.pixel-guide{width:70px;height:99px}td{padding:9px 5px}table{font-size:13px}}`);
+console.log('App help synced from screenshot installation guide');

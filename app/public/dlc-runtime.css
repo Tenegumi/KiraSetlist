@@ -1,0 +1,29 @@
+@font-face{font-family:'Barlow Condensed';src:url('fonts/BarlowCondensed-Black.ttf') format('truetype');font-weight:700 900;font-style:normal;font-display:swap}
+@font-face{font-family:'Barlow Condensed';src:url('fonts/BarlowCondensed-SemiBold.ttf') format('truetype');font-weight:400 600;font-style:normal;font-display:swap}
+@font-face{font-family:'Noto Sans KR';src:url('fonts/NotoSansKR.ttf') format('truetype');font-weight:100 900;font-style:normal;font-display:swap}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent}
+#kira-dlc{width:1440px;height:810px;position:absolute;left:0;top:0;transform-origin:top left;color-scheme:dark}
+#kira-dlc .studio,#kira-dlc .scene{width:1440px;height:810px;background:transparent;overflow:visible;min-height:0;aspect-ratio:auto}
+#kira-dlc .overlay-layer{width:1440px;height:810px;transform:none}
+#kira-dlc .preview-background{display:none;position:absolute;inset:0;background:url('preview.jpg') center 30%/cover}
+.preview #kira-dlc .preview-background{display:block}
+#kira-dlc .amp{width:var(--panel-width,36%);transform:scale(var(--panel-scale,.8));transform-origin:top right}
+#kira-dlc .caption{scale:var(--caption-scale,1.4);transform-origin:bottom left}
+#kira-dlc .disc{animation-duration:var(--rotation-speed,28s);animation-play-state:paused}
+#kira-dlc .spinning .disc{animation-play-state:running}
+#kira-dlc .change-in .caption .disc{animation-duration:var(--rotation-speed,28s),.66s;animation-play-state:var(--disc-spin-state,paused),running}
+#kira-dlc .caption .song-title{font-family:'Noto Sans KR',sans-serif;font-size:41px}
+#kira-dlc .no-current .current-tag{visibility:hidden}
+#kira-dlc .queue-row .artist,#kira-dlc .queue-title,#kira-dlc .now .artist,#kira-dlc .now .song-title{overflow-wrap:anywhere}
+#kira-dlc .queue-title{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#kira-dlc .amp .artist{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#kira-dlc .caption .song-title{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+/* OBS's viewport can be a small preview; the design canvas must stay constant. */
+@media(max-width:600px){#kira-dlc .scene{min-height:0}#kira-dlc .overlay-layer{width:1440px;height:810px;transform:none}#kira-dlc .amp{width:var(--panel-width,36%);max-width:none;padding:13px 15px 14px}#kira-dlc .caption{left:3.5%;bottom:6.5%;width:60%;gap:18px;min-height:108px}#kira-dlc .caption-copy{padding-bottom:48px}#kira-dlc .caption .song-title{font-size:41px}#kira-dlc .record-pack{--record-size:82px}#kira-dlc .amp .song-title{font-size:27px}}
+@media(prefers-reduced-motion:reduce){#kira-dlc .disc,#kira-dlc .change-in .caption .disc{animation:none}}
+/* Skew the cutout backing, keeping the queue lettering on its own sharp plane. */
+#kira-dlc .cutout .queue-row{position:relative;isolation:isolate;transform:none;background:transparent;border-left:0}
+#kira-dlc .cutout .queue-row:before{content:'';position:absolute;inset:0;z-index:-1;background:#b29bc115;border-left:2px solid #b39cce;transform:skewX(-3deg)}
+#kira-dlc .cutout .queue-row:nth-child(3):before{transform:skewX(3deg)}
+/* A less tightly packed grille avoids crawling dot patterns during the recoil. */
+#kira-dlc .mesh{background-image:radial-gradient(#ece8ff20 .8px,transparent 1.3px);background-size:6px 6px}

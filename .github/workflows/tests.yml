@@ -10,6 +10,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+      - name: Prepare runtime for isolated installer test
+        run: |
+          New-Item -ItemType Directory -Force app/runtime | Out-Null
+          Copy-Item -LiteralPath (Get-Command node).Source -Destination app/runtime/node.exe
       - run: npm test
-      - name: Verify installer upgrade and screenshot paths
-        run: pwsh -NoProfile -File test/install.test.ps1

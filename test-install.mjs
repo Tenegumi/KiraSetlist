@@ -1,0 +1,13 @@
+import fs from 'node:fs';import path from 'node:path';import os from 'node:os';import assert from 'node:assert/strict';import {execFileSync} from 'node:child_process';import {fileURLToPath} from 'node:url';
+const root=path.dirname(fileURLToPath(import.meta.url)),temp=fs.mkdtempSync(path.join(os.tmpdir(),'kira-install-test-')),roaming=path.join(temp,'roaming'),obs=path.join(roaming,'obs-studio'),scenes=path.join(obs,'basic/scenes');fs.mkdirSync(scenes,{recursive:true});
+const template=JSON.parse(fs.readFileSync(path.join(root,'obs-template.json'),'utf8'));
+const initial={name:'기존 방송',current_scene:'방송',current_program_scene:'방송',sources:[{id:'scene',name:'방송',uuid:'existing-scene',settings:{id_counter:1,items:[]}}],groups:[],scene_order:[{name:'방송'}],modules:{'scripts-tool':[{path:'other.lua',settings:{}}]}};
+fs.writeFileSync(path.join(scenes,'Existing.json'),JSON.stringify(initial));fs.mkdirSync(path.join(obs,'basic/profiles/Test'),{recursive:true});fs.writeFileSync(path.join(obs,'basic/profiles/Test/basic.ini'),'[Video]\nBaseCX=1920\nBaseCY=1080\nFPSType=0\nFPSCommon=30\n');
+fs.writeFileSync(path.join(obs,'user.ini'),'[BasicWindow]\nExtraBrowserDocks=[]\n[Basic]\nProfileDir=Test\nSceneCollection=기존 방송\nSceneCollectionFile=Existing\n');
+const dest=path.join(temp,'installed'),env={...process.env,USERPROFILE:temp,APPDATA:roaming};
+const run=()=>execFileSync(process.execPath,[path.join(root,'install.mjs'),dest],{env,encoding:'utf8'});run();
+assert.deepEqual(JSON.parse(fs.readFileSync(path.join(scenes,'Existing.json'),'utf8')),initial);
+let collection=JSON.parse(fs.readFileSync(path.join(scenes,'Kira_Setlist_Integrated.json'),'utf8'));const browser=collection.sources.find(s=>s.id==='browser_source');assert.equal(browser.settings.width,3840);assert.equal(browser.settings.fps,60);assert.ok(collection.modules['scripts-tool'].some(s=>s.path==='other.lua'));
+fs.writeFileSync(path.join(dest,'data/state.json'),'PERSONAL DATA SENTINEL');fs.writeFileSync(path.join(dest,'public/artwork/personal.png'),'PERSONAL ART');run();assert.equal(fs.readFileSync(path.join(dest,'data/state.json'),'utf8'),'PERSONAL DATA SENTINEL');assert.equal(fs.readFileSync(path.join(dest,'public/artwork/personal.png'),'utf8'),'PERSONAL ART');
+collection=JSON.parse(fs.readFileSync(path.join(scenes,'Kira_Setlist_Integrated.json'),'utf8'));assert.equal(collection.sources.filter(s=>s.name==='키라 통합 셋리스트 오버레이').length,1);
+console.log('설치 · OBS 자동 등록 · 기존 장면 보존 · 재설치 데이터 보존 확인');
