@@ -1,0 +1,11 @@
+data/state.json
+data/state.json.bak
+data/*.tmp
+data/artwork-progress.json
+public/artwork/*
+!public/artwork/.gitkeep
+test-results/
+server.log
+server-error.log
+dist/
+node_modules/

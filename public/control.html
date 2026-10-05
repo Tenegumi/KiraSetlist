@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>키라 셋리스트</title><link rel="stylesheet" href="control.css"><script type="module" src="control.js"></script></head>
+<body><main class="app">
+ <header class="app-header"><div><span class="eyebrow">KIRA / LIVE SESSION</span><h1>셋리스트</h1></div><div class="header-actions"><span class="connection" id="connection" role="status">연결 중</span><a class="quiet" href="/api/export" download>백업</a><button id="copy-overlay" class="quiet">OBS 주소 복사</button></div></header>
+ <nav class="dock-tabs" aria-label="셋리스트 메뉴" hidden><button data-dock-tab="list" aria-pressed="true">리스트</button><button data-dock-tab="book" aria-pressed="false">노래책</button><button data-dock-tab="settings" aria-pressed="false">화면 설정</button></nav>
+ <section class="preview-section" aria-label="방송 미리보기"><div class="preview"><iframe src="/overlay?preview=1" title="키라 방송 오버레이 미리보기"></iframe><a href="/overlay?preview=1" target="_blank" rel="noopener" class="preview-expand">크게 보기 ↗</a></div>
+  <details class="appearance"><summary>화면 설정</summary><div class="settings-grid">
+   <div class="settings-heading">우측 셋리스트</div>
+   <label>표시 구성<select id="display-preset"><option value="current">현재 곡만</option><option value="next">현재 곡 + 다음 2곡</option><option value="full">이전 1곡 + 현재 곡 + 다음 2곡</option><option value="custom">직접 설정</option></select></label>
+   <label class="switch"><input id="showPrevious" type="checkbox" checked>이전 곡 1개 표시</label>
+   <label>다음 곡 수<select id="nextSongs" data-number><option value="0">표시 안 함</option><option value="1">1곡</option><option value="2" selected>2곡</option><option value="3">3곡</option><option value="4">4곡</option><option value="5">5곡</option></select></label>
+   <label>우측 패널 크기 <output id="panelScale-value">75%</output><input id="panelScale" type="range" min="50" max="120" value="75"></label>
+   <label>오른쪽 여백 <output id="panelRight-value">60px</output><input id="panelRight" type="range" min="0" max="1700" step="5" value="60"></label>
+   <label>위쪽 여백 <output id="panelTop-value">55px</output><input id="panelTop" type="range" min="0" max="1000" step="5" value="55"></label>
+   <div class="settings-note">크기와 위치는 방송 화면에만 적용돼요. 화면 밖으로 나가는 위치는 자동으로 보정해요.<button id="reset-layout" class="quiet" type="button">크기·위치 기본값으로</button></div>
+   <div class="settings-heading">스타일</div>
+   <label>테마<select id="theme"><option value="dark">딥 퍼플</option><option value="light">라벤더 글라스</option></select></label><label>셋리스트 배경 <output id="opacity-value">70%</output><input id="opacity" type="range" min="0" max="100" value="70"></label><label class="switch"><input id="plaid" type="checkbox">작은 체크 포인트</label>
+   <div class="settings-heading">좌측 하단 · 앨범 아트</div>
+   <label class="switch"><input id="caption" type="checkbox" checked>좌측 하단 곡 정보</label><label>하단 곡 정보 크기 <output id="captionScale-value">85%</output><input id="captionScale" type="range" min="50" max="120" value="85"></label><label class="switch"><input id="rotate" type="checkbox" checked>앨범 아트 회전</label><label>회전 한 바퀴 <output id="speed-value">28초</output><input id="rotationSeconds" type="range" min="15" max="60" value="28"></label><label class="session-field">방송 제목<input id="title" type="text" maxlength="48" value="LIVE SESSION"></label>
+  </div></details>
+ </section>
+ <div class="work-grid"><section class="library-section" aria-labelledby="library-heading"><div class="section-heading"><div><span class="eyebrow">YOUR SONGBOOK</span><h2 id="library-heading">노래책 <span id="book-count"></span></h2></div><button id="missing-filter" class="quiet"></button></div>
+  <label class="search-label"><span class="sr-only">곡명·가수 검색</span><input type="search" id="search" placeholder="곡명, 가수 또는 초성으로 검색" autocomplete="off"></label>
+  <div class="genre-tabs" role="group" aria-label="장르 필터"><button data-genre="전체" aria-pressed="true">전체</button><button data-genre="J-pop" aria-pressed="false">J-pop</button><button data-genre="K-pop" aria-pressed="false">K-pop</button><button data-genre="애니메이션" aria-pressed="false">애니메이션</button><button data-genre="보컬로이드" aria-pressed="false">보컬로이드</button><button data-genre="기타" aria-pressed="false">기타</button><button data-genre="직접 등록" aria-pressed="false">직접 등록</button></div>
+  <p id="result-count" class="subtle" aria-live="polite"></p><div id="library" class="library"></div>
+ </section>
+ <section class="lineup-section" aria-labelledby="lineup-heading"><div class="section-heading"><div><span class="eyebrow">TODAY’S SESSION</span><h2 id="lineup-heading">오늘의 리스트 <span id="queue-count">0</span></h2></div><div class="lineup-tools"><button id="open-custom" class="secondary">+ 직접 추가</button><button id="clear" class="quiet">비우기</button></div></div>
+  <div class="session-actions"><button id="complete" class="primary">완료 · 다음 곡 →</button><button id="undo" class="secondary">되돌리기</button></div><div id="queue" class="queue" aria-live="polite"></div>
+  <p class="shortcut-note">현재 곡은 직접 지정합니다. 순서는 드래그하거나 화살표로 바꿀 수 있습니다.</p>
+ </section></div>
+ <footer class="app-footer"><span>SEIROKU KIRA</span><button id="open-help" class="footer-help">설치·사용 안내</button><a id="songbook-link" href="https://app.notion.com/p/e9dcf4147be9836db55101620d5c7b23?v=496cf4147be9833198e6086b6eb81579" target="_blank" rel="noopener">원본 노래책 ↗</a></footer>
+</main><div id="toast" class="toast" role="status" hidden></div>
+<dialog id="art-dialog"><form method="dialog"><div class="dialog-heading"><div><span class="eyebrow">ALBUM ART</span><h2 id="art-title"></h2><p id="art-artist" class="subtle"></p></div><button aria-label="닫기" class="quiet">✕</button></div></form><p class="subtle">곡·가수·버전을 확인하고 선택해 주세요.</p><div id="art-candidates" class="art-candidates"></div><label class="upload-label">내 이미지 등록<input id="art-upload" type="file" accept="image/png,image/jpeg,image/webp"></label><div class="art-links"><a id="art-source" target="_blank" rel="noopener">현재 이미지 출처 ↗</a><a id="art-notion" target="_blank" rel="noopener">노래책 곡 정보 ↗</a></div></dialog>
+<dialog id="custom-dialog"><form id="custom-form"><div class="dialog-heading"><div><span class="eyebrow">ADD A SONG</span><h2>곡 직접 추가</h2></div><button type="button" id="close-custom" aria-label="곡 추가 닫기" class="quiet">✕</button></div><p class="subtle">노래책에 없는 신청곡도 오늘의 리스트에 넣을 수 있어요.</p><div class="custom-fields"><label>곡명<input id="custom-title" type="text" maxlength="160" required autocomplete="off"></label><label>가수 <span class="subtle">선택</span><input id="custom-artist" type="text" maxlength="120" autocomplete="off"></label><label>앨범 아트 <span class="subtle">선택 · 4MB 이하</span><input id="custom-art" type="file" accept="image/png,image/jpeg,image/webp"></label><label class="custom-save"><input id="custom-save" type="checkbox">내 노래책에도 저장</label></div><p id="custom-error" class="form-error" role="alert" hidden></p><div class="custom-actions"><button type="submit" id="custom-submit" class="primary">오늘의 리스트에 추가</button></div></form></dialog>
+<dialog id="help-dialog" class="help-dialog"><form method="dialog"><div class="dialog-heading"><h2>설치·사용 안내</h2><button class="quiet" aria-label="설치 안내 닫기">✕</button></div></form><iframe src="/guide" title="키라 셋리스트 한글 설치·사용 안내" loading="lazy"></iframe></dialog>
+</body></html>
