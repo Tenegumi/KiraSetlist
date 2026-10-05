@@ -7,7 +7,7 @@ if ((Split-Path $taskResolvedPackage -Parent) -ne $taskDistRoot -or (Split-Path 
 if (Test-Path -LiteralPath $taskResolvedPackage) { Remove-Item -LiteralPath $taskResolvedPackage -Recurse -Force }
 New-Item -ItemType Directory -Path $taskPackage -Force | Out-Null
 $taskGuideTemplate = Get-Content -LiteralPath (Join-Path $taskRoot 'obs\guide.html') -Raw -Encoding UTF8
-$taskPackageGuide = $taskGuideTemplate.Replace('__INSTALL_DIR__','%USERPROFILE%\KiraSetlist').Replace('__DOCK_URL__','See OBS-guide.html in your installed KiraSetlist folder for the exact address.')
+$taskPackageGuide = $taskGuideTemplate.Replace('__INSTALL_DIR__','%USERPROFILE%\KiraSetlist').Replace('__DOCK_URL__','설치가 끝난 폴더의 OBS-guide.html을 열면 네 PC에 맞는 주소가 나와.')
 [IO.File]::WriteAllText((Join-Path $taskRoot 'public\guide.html'),$taskPackageGuide)
 Copy-Item -LiteralPath (Join-Path $taskRoot 'obs\guide.css') -Destination (Join-Path $taskRoot 'public\guide.css') -Force
 Copy-Item -LiteralPath (Join-Path $taskRoot 'lib') -Destination $taskPackage -Recurse -Force
@@ -16,8 +16,11 @@ New-Item -ItemType Directory -Path (Join-Path $taskPublic 'artwork') -Force | Ou
 Get-ChildItem -LiteralPath (Join-Path $taskRoot 'public') -File | Copy-Item -Destination $taskPublic -Force
 # Never bundle personal uploaded artwork or a broadcaster's live session state.
 Copy-Item -LiteralPath (Join-Path $taskRoot 'public\artwork\.gitkeep') -Destination (Join-Path $taskPublic 'artwork') -Force
-Copy-Item -LiteralPath (Join-Path $taskRoot 'public\guide-assets') -Destination $taskPublic -Recurse -Force
-Copy-Item -LiteralPath (Join-Path $taskRoot 'public\guide-assets') -Destination $taskPackage -Recurse -Force
+foreach ($taskGuideParent in @($taskPublic,$taskPackage)) {
+    $taskGuideAssets = Join-Path $taskGuideParent 'guide-assets'
+    New-Item -ItemType Directory -Path $taskGuideAssets -Force | Out-Null
+    Get-ChildItem -LiteralPath (Join-Path $taskRoot 'public\guide-assets') -File | Where-Object Name -ne 'guide-mascot.png' | Copy-Item -Destination $taskGuideAssets -Force
+}
 $taskData = Join-Path $taskPackage 'data'
 New-Item -ItemType Directory -Path $taskData -Force | Out-Null
 foreach ($taskName in @('songbook.raw.json','artwork.json')) {

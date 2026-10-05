@@ -9,3 +9,9 @@ server.log
 server-error.log
 dist/
 node_modules/
+
+# Local drafts superseded by the moving pixel guide.
+docs/tutorial/
+public/guide-assets/guide-mascot.png
+scripts/export-tutorial.mjs
+scripts/build-motion-guide.mjs

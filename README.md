@@ -4,7 +4,7 @@
 
 ![키라 방송 적용 예시](public/guide-assets/broadcast-example.png)
 
-**[설치 ZIP 다운로드](https://github.com/Tenegumi/KiraSetlist/releases/latest)** · **[스크린샷 설치·사용 가이드](docs/INSTALL.md)** · [개발·데이터 안내](docs/DEVELOPMENT.md)
+**[설치 ZIP 다운로드](https://github.com/Tenegumi/KiraSetlist/releases/latest)** · **[스크린샷 설치·사용 가이드](docs/INSTALL.md)** · **[움직이는 도트 남궁우 튜토리얼](docs/tutorial-motion/README.md)** · [개발·데이터 안내](docs/DEVELOPMENT.md)
 
 ## 처음 설치하기
 
