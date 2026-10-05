@@ -1,16 +1,20 @@
-import {get,put} from '@vercel/blob';
+import {readJson,writeJson,StorageUnavailable} from './storage.mjs';
 import fs from 'node:fs';
 import {fetchNotionSongs,mergeCatalog} from './notion-source.mjs';
 const base=JSON.parse(fs.readFileSync(new URL('../public/catalog.json',import.meta.url),'utf8'));
 const key='catalog/notion.json';
 let cache;
 async function read(){
- const result=await get(key,{access:'private',useCache:false,headers:{'Accept-Encoding':'identity'}});
- return result?{value:await new Response(result.stream).json(),etag:result.blob.etag}:null;
+ return readJson(key,{optionalLegacy:true});
 }
 export async function liveCatalog(){
  if(cache&&Date.now()-cache.time<60000)return cache.value;
- const data=await read();
+ let data;
+ try{data=await read();}catch(error){
+  if(!(error instanceof StorageUnavailable))throw error;
+  const value={...(cache?.value||{songs:base,version:'bundled'}),sync:{...(cache?.value.sync||{}),status:'degraded',message:'저장소 연결을 복구 중이에요. 마지막 노래책을 표시해요.'}};
+  cache={time:Date.now(),value};return value;
+ }
  const value={songs:mergeCatalog(base,data?.value.songs||[]).songs,sync:data?.value.sync||{status:'pending'},version:data?.value.version||'bundled'};
  cache={time:Date.now(),value};return value;
 }
@@ -20,6 +24,6 @@ export async function syncNotion(){
  const now=new Date().toISOString();
  const value={version:now,songs:merged.songs.map(({artwork,...song})=>song),sync:{status:'ok',lastSuccess:now,sourceCount:incoming.length,total:merged.songs.length,added:merged.added,updated:merged.updated,preserved:merged.preserved,deletedSongs:'preserve'}};
  // Only a complete successful fetch replaces the saved catalog. Failed fetches keep it intact.
- await put(key,JSON.stringify(value),{access:'private',contentType:'application/json',addRandomSuffix:false,allowOverwrite:!!before,...(before?{ifMatch:before.etag}:{})});
+ await writeJson(key,value,before?.etag);
  cache=undefined;return value.sync;
 }
