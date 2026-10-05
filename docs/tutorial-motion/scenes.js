@@ -33,7 +33,7 @@ window.TUTORIAL_SCENES=[
     "line": "GitHub의 직접 연결하는 수동 ZIP을 받아 줘. 설치 프로그램 없이 연결할 거야.",
     "image": null,
     "notes": [
-      "파일: KiraSetlist-Manual-1.2.1.zip",
+      "파일: KiraSetlist-Manual-1.2.2.zip",
       "Source code 대신 수동 ZIP 받기"
     ]
   },

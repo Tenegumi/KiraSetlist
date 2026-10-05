@@ -23,7 +23,7 @@
 
 ## 2. 내 PC에 설치하기 · 수동 ZIP
 
-**[수동 ZIP 받기](https://github.com/Tenegumi/KiraSetlist/releases/download/v1.2.1/KiraSetlist-Manual-1.2.1.zip)** · **[남궁우의 로컬 그림 가이드](docs/INSTALL.md)** · [자동 설치를 원한다면](docs/AUTO-INSTALL.md)
+**[수동 ZIP 받기](https://github.com/Tenegumi/KiraSetlist/releases/download/v1.2.2/KiraSetlist-Manual-1.2.2.zip)** · **[남궁우의 로컬 그림 가이드](docs/INSTALL.md)** · [자동 설치를 원한다면](docs/AUTO-INSTALL.md)
 
 1. 위의 **수동 ZIP**을 받고 **모두 압축 풀기**를 해요.
 2. **도구 → 스크립트 → +**에서 폴더의 **kira-unified.lua**를 골라요.
@@ -41,11 +41,15 @@
 
 **원본**은 반투명 셋리스트와 회전 CD, **앰프 DLC**는 컷아웃 앰프·붉은 하트 슬리브·반쯤 꺼낸 LP·보라색 사인이에요. DLC에서 곡이 바뀌면 LP와 곡 정보가 함께 튕기듯 움직여요. 이전 곡과 대기 곡은 제목만 보여 주고, 현재 곡에는 가수도 표시해요.
 
+웹과 로컬 모두 **굵은 앰프** 디자인을 사용해요. 흰색 현재 곡 카드의 제목을 크게 강조하고, 이전·대기 곡은 굵은 글자와 촘촘한 줄 간격으로 표시해요. 긴 대기 곡명은 두 줄까지 보여요. **원본도 제목을 크게·굵게 표시하며, 방송 화면의 가수명은 모두 숨겨요.** 가수 정보는 조작 독과 노래책에 남아 있어요.
+
+![굵은 앰프 디자인의 실행 화면](web/assets/guide-images/web-amp.png)
+
 두 디자인은 **노래책·직접 추가한 곡·오늘의 리스트·현재 곡을 공유**해요. 크기와 투명도 같은 화면 설정은 각각 기억하니, 전환할 때마다 다시 맞출 필요 없어요.
 
 <details><summary>원본 디자인도 보기</summary>
 
-![원본을 적용한 실제 OBS 출력. 방송 배경이 그대로 보입니다.](app/public/guide-assets/unified-original.png)
+![굵은 제목으로 바뀐 원본 오버레이 실행 예시](web/assets/guide-images/web-original.png)
 
 </details>
 
@@ -57,7 +61,9 @@ https://github.com/user-attachments/assets/4b3ef10a-344a-4b2a-a184-9fa94599d59b
 
 https://github.com/user-attachments/assets/29bac96e-cbfd-44e3-8f25-73cd03f0e6a1
 
-각 8초 · 1080p · 60fps예요. 영상의 재생 버튼을 누르면 움직임을 바로 볼 수 있어요.
+위 영상은 이전 DLC 디자인의 전환 예시예요. 현재의 굵은 앰프 디자인은 위 실행 이미지에서 확인해요.
+
+각 8초 · 1080p · 60fps예요. 영상은 이전 글자 디자인의 전환 예시이며, 현재 디자인은 위 실행 이미지에서 확인해요.
 
 ## 방송 중에는 세 가지만 기억해요
 
@@ -91,7 +97,7 @@ https://github.com/user-attachments/assets/c6dcd067-af41-45ff-af69-3282bc8aa9e4
 
 ## 로컬 자동 설치를 원한다면 · 선택 사항
 
-**[자동 설치 ZIP](https://github.com/Tenegumi/KiraSetlist/releases/download/v1.2.1/KiraSetlist-Integrated-1.2.1.zip)**을 풀고, OBS를 닫은 뒤 **설치하기.exe → 설치하고 OBS에 적용**을 눌러요. 새 장면 모음·조작 독·시작 스크립트를 등록하고 그 모음을 선택해요. 알려진 예전 키라 독은 정리하고 다른 독은 보존해요.
+**[자동 설치 ZIP](https://github.com/Tenegumi/KiraSetlist/releases/download/v1.2.2/KiraSetlist-Integrated-1.2.2.zip)**을 풀고, OBS를 닫은 뒤 **설치하기.exe → 설치하고 OBS에 적용**을 눌러요. 새 장면 모음·조작 독·시작 스크립트를 등록하고 그 모음을 선택해요. 알려진 예전 키라 독은 정리하고 다른 독은 보존해요.
 
 **방송 해상도·FPS·인코더·비트레이트·오디오·방송 키는 바꾸지 않아요.** OBS 설정은 먼저 백업해요. 다른 곳에 설치한 OBS는 **OBS 경로 선택**, 포터블은 **포터블 OBS**로 지정해요. [자동 설치 안내](docs/AUTO-INSTALL.md) · [변경 범위와 검증](docs/INSTALL-CHECK.md)
 
