@@ -1,4 +1,8 @@
 import {eventFrames,notification,validateConnection} from './direct-events.js';
+import {browserVersion,obsLinks,recoveryUrl} from './browser-entry.js';
+const release=browserVersion;
+const recover=recoveryUrl({href:location.href,documentRelease:document.querySelector('meta[name="kira-release"]')?.content,release});
+if(recover)location.replace(recover);
 const params=new URLSearchParams(location.hash.slice(1));
 const room=params.get('room'),owner=params.get('owner'),view=params.get('view');
 const token=owner||view;
@@ -20,8 +24,9 @@ async function catalog(){
  })().finally(()=>catalogRequest=null);
  return catalogRequest;
 }
-export const overlayUrl=`${location.origin}/overlay#${new URLSearchParams({room:room||'',view:view||''})}`;
-const dockUrl=`${location.origin}/control?dock=1${location.hash}`;
+const links=obsLinks({origin:location.origin,room:room||'',owner:owner||'',view:view||'',release});
+export const overlayUrl=links.overlay;
+const dockUrl=links.dock;
 window.kiraCloud={overlayUrl,dockUrl};
 function apiUrl(op){return `/api?${new URLSearchParams({op,room:room||''})}`;}
 async function merge(state){
@@ -39,6 +44,7 @@ class CloudHub{
   });
  }
  add(listener){
+  if(recover)return ()=>{};
   if(this.terminal){queueMicrotask(()=>listener.onerror?.({error:this.lastError}));return ()=>{};}
   this.listeners.add(listener);if(this.snapshot)queueMicrotask(()=>{if(this.listeners.has(listener))listener.onmessage?.({data:JSON.stringify(this.snapshot)});});
   if(!this.running){this.running=true;this.connect();}
@@ -121,8 +127,8 @@ window.fetch=async function(input,init){
  }
  return res;
 };
-for(const frame of document.querySelectorAll('iframe'))if(frame.getAttribute('src')?.startsWith('/overlay'))frame.src+=`#${new URLSearchParams({room:room||'',view:view||''})}`;
-for(const link of document.querySelectorAll('a[href^="/overlay"]'))link.href+=`#${new URLSearchParams({room:room||'',view:view||''})}`;
+for(const frame of document.querySelectorAll('iframe'))if(frame.getAttribute('src')?.startsWith('/overlay')){const url=new URL(overlayUrl);for(const [key,value] of new URL(frame.src,location.origin).searchParams)if(key!=='v')url.searchParams.set(key,value);frame.src=url.href;}
+for(const link of document.querySelectorAll('a[href^="/overlay"]')){const url=new URL(overlayUrl);for(const [key,value] of new URL(link.href,location.origin).searchParams)if(key!=='v')url.searchParams.set(key,value);link.href=url.href;}
 const copy=document.getElementById('copy-dock');if(copy)copy.addEventListener('click',async()=>{await navigator.clipboard.writeText(dockUrl);copy.textContent='독 주소 복사됨';setTimeout(()=>copy.textContent='독 주소 복사',1600);});
 const backup=document.querySelector('a[href="/api/export"]');if(backup)backup.addEventListener('click',async e=>{e.preventDefault();const res=await window.fetch('/api/export');if(!res.ok)return;const blob=await res.blob(),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='kira-web-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});
 if(!room||!token){const el=document.getElementById('connection');if(el)el.textContent='첫 화면에서 방송 공간을 만들어 주세요.';}
