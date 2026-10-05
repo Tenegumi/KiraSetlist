@@ -2,7 +2,7 @@ const button=document.getElementById('create-room'),status=document.getElementBy
 function urls(c){return {dock:`${location.origin}/control?dock=1#${new URLSearchParams({room:c.room,owner:c.owner,view:c.view})}`,overlay:`${location.origin}/overlay#${new URLSearchParams({room:c.room,view:c.view})}`};}
 try{const saved=JSON.parse(localStorage.getItem('kira-web-room'));if(saved?.room&&saved.owner&&saved.view){const link=document.getElementById('return-room');link.hidden=false;link.href=urls(saved).dock;}}catch{}
 button.addEventListener('click',async()=>{
- button.disabled=true;status.textContent='방송 공간을 만들고 있어요…';
+ button.disabled=true;status.textContent='OBS에 붙일 링크를 발급하고 있어요…';
  try{
   const res=await fetch('/api?op=rooms',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'}),credentials=await res.json();
   if(!res.ok)throw Error(credentials.error||'방송 공간을 만들지 못했어요.');

@@ -1,10 +1,9 @@
 import {get,put,del,BlobPreconditionFailedError} from '@vercel/blob';
 import {Readable} from 'node:stream';
 import {randomUUID} from 'node:crypto';
-import {loadSongs} from '../lib/catalog.mjs';
 import {createRoom,access,payload,mutate} from '../lib/rooms.mjs';
-import {fileURLToPath} from 'node:url';
-const songs=loadSongs(fileURLToPath(new URL('../',import.meta.url)));
+import {liveCatalog,syncNotion} from '../lib/live-catalog.mjs';
+import {timingSafeEqual} from 'node:crypto';
 const roomPath=id=>`rooms/${id}.json`;
 async function read(id){const result=await get(roomPath(id),{access:'private',useCache:false,headers:{'Accept-Encoding':'identity'}});if(!result)return null;return {room:await new Response(result.stream).json(),etag:result.blob.etag};}
 async function write(id,room,etag){return put(roomPath(id),JSON.stringify(room),{access:'private',contentType:'application/json',addRandomSuffix:false,allowOverwrite:!!etag,...(etag?{ifMatch:etag}:{})});}
@@ -12,15 +11,22 @@ function json(res,status,value){res.statusCode=status;res.setHeader('Content-Typ
 async function body(req){if(req.body&&typeof req.body==='object')return req.body;let s='';for await(const chunk of req){s+=chunk;if(Buffer.byteLength(s)>4_000_000)throw Error('이미지가 너무 커요. 작은 이미지를 사용해 주세요.');}return JSON.parse(s||'{}');}
 export default async function handler(req,res){
  const url=new URL(req.url,'https://kira.invalid'),op=url.searchParams.get('op')||req.url.split('?')[0].replace(/^\/api\/?/,'');
- if(op==='health')return json(res,200,{ready:!!process.env.BLOB_READ_WRITE_TOKEN,mode:'web',notionSync:false});
+ if(op==='health')return json(res,200,{ready:!!process.env.BLOB_READ_WRITE_TOKEN,mode:'web',notionSync:!!process.env.CRON_SECRET});
  if(!process.env.BLOB_READ_WRITE_TOKEN)return json(res,503,{error:'서버 저장소 연결을 준비 중이에요.'});
  try{
+  if(op==='sync-notion'&&req.method==='GET'){
+   const expected=Buffer.from(`Bearer ${process.env.CRON_SECRET||''}`),actual=Buffer.from(req.headers.authorization||'');
+   if(!process.env.CRON_SECRET||actual.length!==expected.length||!timingSafeEqual(actual,expected))return json(res,401,{error:'예약 갱신 전용 요청입니다.'});
+   return json(res,200,await syncNotion());
+  }
+  if(op==='catalog'&&req.method==='GET')return json(res,200,await liveCatalog());
   if(req.method==='POST'){
    const origin=req.headers.origin,host=req.headers['x-forwarded-host']||req.headers.host;
    if(origin&&origin!==`https://${host}`&&origin!==`http://${host}`)return json(res,403,{error:'이 사이트에서 다시 시도해 주세요.'});
    if(!req.headers['content-type']?.startsWith('application/json'))return json(res,415,{error:'JSON 요청이 필요합니다.'});
   }
   if(op==='rooms'&&req.method==='POST'){const created=createRoom();await write(created.id,created.room);return json(res,201,{room:created.id,owner:created.owner,view:created.view});}
+  const {songs}=await liveCatalog();
   const id=url.searchParams.get('room');if(!/^[a-f0-9]{36}$/.test(id||''))return json(res,400,{error:'독 주소 또는 방송 화면 주소를 다시 붙여 넣어 주세요.'});
   const data=await read(id);if(!data)return json(res,404,{error:'방송 공간을 찾을 수 없어요.'});
   const token=req.headers.authorization?.replace(/^Bearer /,'')||(op==='image'?url.searchParams.get('key'):null),role=access(data.room,token);

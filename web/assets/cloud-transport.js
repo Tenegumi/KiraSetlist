@@ -2,13 +2,19 @@ const params=new URLSearchParams(location.hash.slice(1));
 const room=params.get('room'),owner=params.get('owner'),view=params.get('view');
 const token=owner||view;
 const nativeFetch=window.fetch.bind(window);
-const catalog=nativeFetch('/catalog.json').then(r=>{if(!r.ok)throw Error('노래책을 불러오지 못했습니다.');return r.json();});
+let catalogValue,catalogTime=0,catalogRequest;
+async function catalog(){
+ if(catalogValue&&Date.now()-catalogTime<60000)return catalogValue;
+ if(catalogRequest)return catalogRequest;
+ catalogRequest=(async()=>{const r=await nativeFetch('/api?op=catalog',{cache:'no-store'});if(!r.ok)throw Error('노래책을 불러오지 못했습니다.');const data=await r.json();catalogValue=data;catalogTime=Date.now();return data;})().finally(()=>catalogRequest=null);
+ return catalogRequest;
+}
 export const overlayUrl=`${location.origin}/overlay#${new URLSearchParams({room:room||'',view:view||''})}`;
 const dockUrl=`${location.origin}/control?dock=1${location.hash}`;
 window.kiraCloud={overlayUrl,dockUrl};
 function apiUrl(op){return `/api?${new URLSearchParams({op,room:room||''})}`;}
 async function merge(state){
- const songs=await catalog,overrides=state.artworkOverrides||{};
+ const {songs}=await catalog(),overrides=state.artworkOverrides||{};
  const combined=[...songs,...(state.songs||[])].map(s=>({...s,artwork:overrides[s.id]||s.artwork}));
  return {...state,songs:combined};
 }
@@ -29,7 +35,9 @@ class CloudEvents{
    const url=new URL(apiUrl('state'),location.origin);if(this.revision!==null)url.searchParams.set('revision',this.revision);
    const response=await nativeFetch(url,{headers:{Authorization:`Bearer ${token}`},cache:'no-store',signal:AbortSignal.timeout(15000)});
    if(!response.ok){const error=await response.json();throw Error(error.error||'서버 연결을 확인해 주세요.');}
-   if(response.status!==204){const data=await merge(await response.json());this.revision=data.revision;this.onmessage?.({data:JSON.stringify(data)});}
+   const book=await catalog();
+   if(response.status!==204){this.latest=await response.json();this.revision=this.latest.revision;this.catalogVersion=book.version;this.onmessage?.({data:JSON.stringify(await merge(this.latest))});}
+   else if(this.latest&&this.catalogVersion!==book.version){this.catalogVersion=book.version;this.onmessage?.({data:JSON.stringify(await merge(this.latest))});}
    this.delay=1000;
   }catch(error){this.onerror?.({error});this.delay=Math.min(this.delay*2,15000);const el=document.getElementById('connection');if(el)el.textContent=error.message;}
   if(!this.closed)this.timer=setTimeout(()=>this.poll(),this.delay);

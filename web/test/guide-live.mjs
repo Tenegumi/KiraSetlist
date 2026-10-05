@@ -1,0 +1,12 @@
+import {pathToFileURL,fileURLToPath} from 'node:url';import assert from 'node:assert/strict';import fs from 'node:fs/promises';
+const {chromium}=await import(pathToFileURL('C:/Users/legen/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs'));
+const browser=await chromium.launch({channel:'msedge',headless:true}),page=await browser.newPage({viewport:{width:1040,height:1000}}),errors=[];page.on('pageerror',e=>errors.push(e.message));const base='https://kira-setlist-web.vercel.app';
+await page.goto(base);assert.equal(await page.locator('h1').innerText(),'키이잉 키잉 키잉\n키키잉.. 키잉..');assert.equal(await page.locator('#create-room').innerText(),'OBS 입력할 링크 발급하기');assert.ok(await page.locator('.help-primary').evaluate(el=>parseFloat(getComputedStyle(el).fontSize)>=26));
+await fs.mkdir(new URL('../test-results/',import.meta.url),{recursive:true});await page.screenshot({path:fileURLToPath(new URL('../test-results/home-updated.png',import.meta.url)),fullPage:true});
+await page.locator('#create-room').click();await page.locator('dialog').waitFor({state:'visible'});assert.ok((await page.locator('#dock-link').inputValue()).includes('owner='));
+await page.locator('dialog').screenshot({path:fileURLToPath(new URL('../assets/guide-images/web-links.png',import.meta.url)),mask:[page.locator('#dock-link'),page.locator('#overlay-link')],maskColor:'#47354f'});
+await page.goto(base+'/guide');assert.equal(await page.locator('.choices a').first().innerText(),'1. 웹으로 연결\n다운로드 없이 주소 두 개만 붙여요.');
+for(let i=0;i<6;i++){await page.waitForFunction(()=>{const img=document.getElementById('step-image');return img.complete&&img.naturalWidth>0;});assert.equal(await page.locator('#progress').innerText(),`${i+1} / 6`);if(i<5)await page.locator('#next').click();}
+assert.equal(await page.locator('#next').isDisabled(),true);await page.locator('#previous').click();assert.equal(await page.locator('#progress').innerText(),'5 / 6');
+await page.setViewportSize({width:360,height:850});await page.goto(base);assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.goto(base+'/guide');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+assert.deepEqual(errors,[]);console.log('PASS: deployed homepage copy, prominent guide, link issue dialog, web-first/local-second guide, six steps, desktop and mobile layout.');await browser.close();
