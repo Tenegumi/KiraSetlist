@@ -1,15 +1,25 @@
 import fs from 'node:fs';import path from 'node:path';import {createHash} from 'node:crypto';import {fileURLToPath} from 'node:url';
-const root=path.dirname(fileURLToPath(import.meta.url));const folder=path.join(root,'dist/KiraSetlist-Integrated-1.2.0');
-fs.mkdirSync(folder,{recursive:true});
-for(const file of ['설치하기.exe','install.ps1','install.mjs','install.cmd','README.md'])fs.copyFileSync(path.join(root,file),path.join(folder,file));
-fs.cpSync(path.join(root,'docs'),path.join(folder,'docs'),{recursive:true});
-const template=JSON.parse(fs.readFileSync(path.join(root,'obs-template.json'),'utf8'));delete template.browser.settings.local_file;
-fs.writeFileSync(path.join(folder,'obs-template.json'),JSON.stringify(template,null,2));
-const app=path.join(folder,'app');fs.mkdirSync(app,{recursive:true});
-for(const file of ['lib','public','runtime','server.mjs','package.json','kira-unified.lua','dock-launcher.html','overlay-launcher.html'])fs.cpSync(path.join(root,'app',file),path.join(app,file),{recursive:true});
-fs.mkdirSync(path.join(app,'data'),{recursive:true});for(const file of ['songbook.raw.json','artwork.json'])fs.copyFileSync(path.join(root,'app/data',file),path.join(app,'data',file));
-// Include only the catalog: personal queue, OBS settings and credentials are not release files.
-if(fs.existsSync(path.join(app,'data/state.json')))throw Error('Personal state must not be packaged');
-const files=[];function walk(dir){for(const item of fs.readdirSync(dir,{withFileTypes:true})){const p=path.join(dir,item.name);if(item.isDirectory())walk(p);else if(item.name!=='SHA256SUMS.txt')files.push(p);}}walk(folder);
-fs.writeFileSync(path.join(folder,'SHA256SUMS.txt'),files.map(p=>createHash('sha256').update(fs.readFileSync(p)).digest('hex')+'  '+path.relative(folder,p).replaceAll('\\','/')).join('\n')+'\n');
-console.log(JSON.stringify({folder,files:files.length,bytes:files.reduce((n,p)=>n+fs.statSync(p).size,0)}));
+const root=path.dirname(fileURLToPath(import.meta.url)),version='1.2.1';
+const installer=path.join(root,`dist/KiraSetlist-Integrated-${version}`),manual=path.join(root,`dist/KiraSetlist-Manual-${version}`);
+fs.mkdirSync(installer,{recursive:true});fs.mkdirSync(manual,{recursive:true});
+for(const name of ['설치하기.exe','install.ps1','install.mjs','obs-config.mjs','install.cmd','README.md'])fs.copyFileSync(path.join(root,name),path.join(installer,name));
+fs.cpSync(path.join(root,'docs'),path.join(installer,'docs'),{recursive:true});
+const template=JSON.parse(fs.readFileSync(path.join(root,'obs-template.json'),'utf8'));delete template.browser.settings.local_file;fs.writeFileSync(path.join(installer,'obs-template.json'),JSON.stringify(template,null,2));
+function copyApp(dest){
+ fs.mkdirSync(dest,{recursive:true});for(const name of ['lib','public','runtime','server.mjs','package.json','kira-unified.lua','dock-launcher.html','overlay-launcher.html'])fs.cpSync(path.join(root,'app',name),path.join(dest,name),{recursive:true});
+ fs.mkdirSync(path.join(dest,'data'),{recursive:true});for(const name of ['songbook.raw.json','artwork.json'])fs.copyFileSync(path.join(root,'app/data',name),path.join(dest,'data',name));
+ if(fs.existsSync(path.join(dest,'data/state.json')))throw Error('Personal state must not be packaged');
+ const artwork=fs.readdirSync(path.join(dest,'public/artwork'));if(artwork.some(name=>name!=='.gitkeep'))throw Error('Personal artwork must not be packaged');
+}
+copyApp(path.join(installer,'app'));copyApp(manual);
+fs.cpSync(path.join(root,'docs'),path.join(manual,'docs'),{recursive:true});
+// README's screenshot references use app/public; the standalone manual app is at ZIP root.
+for(const name of fs.readdirSync(path.join(manual,'docs'))){if(name.endsWith('.md')){const file=path.join(manual,'docs',name);fs.writeFileSync(file,fs.readFileSync(file,'utf8').replaceAll('../app/public/','../public/'));}}
+fs.writeFileSync(path.join(manual,'처음 읽기.txt'),'설치 프로그램이 없는 수동 연결판입니다.\r\n먼저 처음 시작.html을 열어 안내를 확인해 주세요.\r\nOBS 도구 > 스크립트에서 kira-unified.lua를 등록합니다.\r\n독 URL: http://127.0.0.1:4320/control?dock=1\r\n방송 URL: http://127.0.0.1:4320/overlay (3840 x 2160 / 60fps)\r\n압축을 푼 폴더는 옮기거나 삭제하지 마세요.\r\n');
+fs.writeFileSync(path.join(manual,'OBS-setup.txt'),fs.readFileSync(path.join(manual,'처음 읽기.txt')));
+fs.copyFileSync(path.join(root,'manual-start.html'),path.join(manual,'처음 시작.html'));
+for(const folder of [installer,manual]){
+ const files=[];function walk(dir){for(const e of fs.readdirSync(dir,{withFileTypes:true})){const file=path.join(dir,e.name);if(e.isDirectory())walk(file);else if(e.name!=='SHA256SUMS.txt')files.push(file);}}walk(folder);
+ fs.writeFileSync(path.join(folder,'SHA256SUMS.txt'),files.map(file=>createHash('sha256').update(fs.readFileSync(file)).digest('hex')+'  '+path.relative(folder,file).replaceAll('\\','/')).join('\n')+'\n');
+ console.log(JSON.stringify({folder,files:files.length,bytes:files.reduce((total,file)=>total+fs.statSync(file).size,0)}));
+}

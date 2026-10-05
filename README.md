@@ -4,18 +4,19 @@
 
 ![앰프 DLC를 적용한 실제 OBS 출력](app/public/guide-assets/unified-amp.png)
 
-**[설치 ZIP 받기](https://github.com/Tenegumi/KiraSetlist/releases/download/v1.2.0/KiraSetlist-Integrated-1.2.0.zip)** · **[그림으로 따라 하기](docs/INSTALL.md)** · **[가이드 영상 받기](https://github.com/Tenegumi/KiraSetlist/releases/download/v1.2.0/kira-integrated-tutorial.mp4)** · **[영상·이미지 128장 묶음](https://github.com/Tenegumi/KiraSetlist/releases/download/v1.2.0/KiraSetlist-Integrated-Guide.zip)**
+**[직접 연결하는 수동 ZIP](https://github.com/Tenegumi/KiraSetlist/releases/download/v1.2.1/KiraSetlist-Manual-1.2.1.zip)** · **[그림으로 따라 하기](docs/INSTALL.md)** · [자동 설치를 원한다면](docs/AUTO-INSTALL.md)
 
-## 설치는 이렇게 해요
+## 먼저, OBS에 직접 붙여요
 
-1. 방송이 끝나면 **OBS를 닫아요**.
-2. 위의 설치 ZIP을 받아 **모두 압축 풀기**를 해요.
-3. 폴더 안의 **설치하기.exe**를 열고 **설치하고 OBS에 적용**을 눌러요.
-4. OBS가 열리면 **키라 통합 셋리스트 (원본 + DLC)** 장면 모음과 조작 독을 확인해요.
+1. 위의 **수동 ZIP**을 받고 **모두 압축 풀기**를 해요.
+2. **도구 → 스크립트 → +**에서 폴더의 **kira-unified.lua**를 골라요.
+3. **독 → 사용자 지정 브라우저 독**에 조작 주소를 붙여 넣어요.
+4. **소스 → + → 브라우저**에 방송 주소와 **3840×2160 / 60fps**를 넣어요.
+5. 소스를 **화면에 맞추기**로 맞추면 끝이에요.
 
-<img src="app/public/guide-assets/installer.png" alt="설치하고 OBS에 적용 버튼이 있는 실제 설치 프로그램 화면" width="540">
+![직접 연결하는 독 주소 안내 카드](docs/manual-assets/dock.svg)
 
-다음부터는 **OBS만 켜면 돼요**. 실행에 필요한 Node도 들어 있고, 조작 독·오버레이·자동 시작 스크립트가 함께 등록돼요. Windows용이며 OBS 32.2.2에서 확인했어요. GitHub의 **Source code**는 개발용이니 위의 **설치 ZIP**을 받아 주세요.
+주소와 클릭 순서는 **[그림 가이드](docs/INSTALL.md)**에서 복사하며 따라 해요. 설치 프로그램 없이 내가 쓰는 장면에 연결해요. Node는 ZIP에 들어 있고, 스크립트를 등록하면 다음부터는 **OBS만 켜면 돼요**. Windows용이며 OBS 32.2.2에서 출력했어요. 폴더는 연결한 뒤 옮기지 않아요.
 
 ## 오늘의 디자인은 버튼으로
 
@@ -30,6 +31,16 @@
 ![원본을 적용한 실제 OBS 출력. 방송 배경이 그대로 보입니다.](app/public/guide-assets/unified-original.png)
 
 </details>
+
+### 원본 · 곡 넘기는 모습
+
+https://github.com/user-attachments/assets/4b3ef10a-344a-4b2a-a184-9fa94599d59b
+
+### 앰프 DLC · 곡 넘기는 모습
+
+https://github.com/user-attachments/assets/29bac96e-cbfd-44e3-8f25-73cd03f0e6a1
+
+각 8초 · 1080p · 60fps예요. 영상의 재생 버튼을 누르면 움직임을 바로 볼 수 있어요.
 
 ## 방송 중에는 세 가지만 기억해요
 
@@ -57,20 +68,22 @@
 
 ## 남궁우가 움직이며 알려줘요
 
-![도트 남궁우의 움직이는 통합본 튜토리얼](docs/tutorial-motion/examples/movement.gif)
+https://github.com/user-attachments/assets/c6dcd067-af41-45ff-af69-3282bc8aa9e4
 
-**32장면 · 3분 12초 · Full HD 무음 영상**이에요. 설치, 디자인 전환, 신청곡 추가, 현재 곡 지정, 화면 설정, 업데이트와 백업까지 알려줘요. **1920×1080 이미지 128장**, 자막 SRT, 내레이션 대사, 단계별로 넘겨 보는 HTML도 함께 받아 쓸 수 있어요.
+**재생 버튼을 눌러 같이 따라 해요.** 36장면 · 3분 36초 · Full HD 무음 영상이에요. **수동 ZIP → 스크립트 → 독 → 브라우저 소스**를 먼저 안내하고, 곡 추가와 화면 설정을 보여줘요. 자동 설치는 마지막 부분의 선택 사항이에요.
 
-[영상·이미지 미리 보기](docs/tutorial-motion/README.md) · [편집할 때 사용하는 방법](docs/MEDIA.md)
+## 자동 설치를 원한다면 · 두 번째 방법
 
-**전환 모션만 보기:** [원본 60fps 샘플](https://github.com/Tenegumi/KiraSetlist/releases/download/v1.2.0/KiraSetlist-Original-Motion-60fps.mp4) · [DLC 60fps 샘플](https://github.com/Tenegumi/KiraSetlist/releases/download/v1.2.0/KiraSetlist-DLC-Motion-60fps.mp4). 각 8초, 예시 목록에서 두 번 곡을 넘기는 실제 렌더러 화면이에요.
+**[자동 설치 ZIP](https://github.com/Tenegumi/KiraSetlist/releases/download/v1.2.1/KiraSetlist-Integrated-1.2.1.zip)**을 풀고, OBS를 닫은 뒤 **설치하기.exe → 설치하고 OBS에 적용**을 눌러요. 새 장면 모음·조작 독·시작 스크립트를 등록하고 그 모음을 선택해요. 알려진 예전 키라 독은 정리하고 다른 독은 보존해요.
+
+**방송 해상도·FPS·인코더·비트레이트·오디오·방송 키는 바꾸지 않아요.** OBS 설정은 먼저 백업해요. 다른 곳에 설치한 OBS는 **OBS 경로 선택**, 포터블은 **포터블 OBS**로 지정해요. [자동 설치 안내](docs/AUTO-INSTALL.md) · [변경 범위와 검증](docs/INSTALL-CHECK.md)
 
 ## 업데이트와 백업
 
-OBS를 닫고 새 ZIP의 **설치하기.exe**를 실행해요. 같은 설치 폴더를 쓰면 개인 목록·직접 등록한 곡·이미지·설정이 보존돼요. 통합본은 기본적으로 `사용자 폴더/KiraSetlistUnified`에 설치돼요. 기존 원본 또는 단독 DLC가 있으면 첫 설치 때 저장한 데이터도 가져와요.
+수동판은 OBS를 닫고 **data**와 **public/artwork**를 백업해요. 새 ZIP으로 프로그램 파일을 바꾸고 개인 데이터는 그대로 유지해요. [자세한 수동 업데이트](docs/MANUAL.md#업데이트와-되돌리기)
 
-백업은 설치 폴더의 **data**와 **public/artwork**를 함께 복사해 두면 돼요. 기존 장면 모음은 보관하며, OBS 설정 백업도 설치할 때 만들어 둬요. [문제가 생겼을 때](docs/INSTALL.md#잘-안-보이면-여기부터)
+자동 설치판은 같은 폴더에 새 ZIP의 **설치하기.exe**를 다시 실행해요. 개인 목록·직접 등록 곡·이미지·설정을 보존해요. 기본 경로는 **사용자 폴더/KiraSetlistUnified**이며 기존 단독판의 데이터도 첫 설치 때 가져와요.
 
 노래책은 2026-10-05에 가져온 **211곡 스냅샷**이에요. Notion의 변경 사항을 자동으로 동기화하지 않아요. 외부 앨범 이미지는 인터넷이 필요하고 직접 등록한 이미지는 PC에 저장돼요.
 
-[개발·저장 구조](docs/DEVELOPMENT.md) · [v1.2.0 변경 사항](docs/RELEASE-NOTES.md)
+[개발·저장 구조](docs/DEVELOPMENT.md) · [변경 사항](docs/RELEASE-NOTES.md)

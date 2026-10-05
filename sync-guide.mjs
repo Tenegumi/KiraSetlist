@@ -1,7 +1,7 @@
 import fs from 'node:fs';import path from 'node:path';import {fileURLToPath} from 'node:url';
 const root=path.dirname(fileURLToPath(import.meta.url)),publicDir=path.join(root,'app/public'),base='https://github.com/Tenegumi/KiraSetlist/blob/master/docs/';
 const esc=t=>t.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
-function url(u){if(u.startsWith('../app/public/'))return u.slice('../app/public/'.length);if(u.startsWith('tutorial-motion/examples/')){const name='tutorial-'+path.basename(u);fs.copyFileSync(path.join(root,'docs',u),path.join(publicDir,'guide-assets',name));return 'guide-assets/'+name;}if(u==='../README.md')return 'https://github.com/Tenegumi/KiraSetlist';if(u.endsWith('.md'))return base+u;return u;}
+function url(u){if(u.startsWith('../app/public/'))return u.slice('../app/public/'.length);if(u.startsWith('manual-assets/')){const name='manual-'+path.basename(u);fs.copyFileSync(path.join(root,'docs',u),path.join(publicDir,'guide-assets',name));return 'guide-assets/'+name;}if(u.startsWith('tutorial-motion/examples/')){const name='tutorial-'+path.basename(u);fs.copyFileSync(path.join(root,'docs',u),path.join(publicDir,'guide-assets',name));return 'guide-assets/'+name;}if(u==='../README.md')return 'https://github.com/Tenegumi/KiraSetlist';if(/\.md(?:#|$)/.test(u))return base+u;return u;}
 const inline=t=>esc(t).replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\[([^\]]+)\]\(([^)]+)\)/g,(_,label,u)=>`<a href="${url(u)}" target="_blank" rel="noopener">${label}</a>`);
 let html='',section=false,table=false;
 for(const line of fs.readFileSync(path.join(root,'docs/INSTALL.md'),'utf8').split(/\r?\n/)){

@@ -1,13 +1,40 @@
 import fs from 'node:fs';import path from 'node:path';import os from 'node:os';import assert from 'node:assert/strict';import {execFileSync} from 'node:child_process';import {fileURLToPath} from 'node:url';
+import {resolveOBSConfig,isLegacyKiraDock} from './obs-config.mjs';
 const root=path.dirname(fileURLToPath(import.meta.url)),temp=fs.mkdtempSync(path.join(os.tmpdir(),'kira-install-test-')),roaming=path.join(temp,'roaming'),obs=path.join(roaming,'obs-studio'),scenes=path.join(obs,'basic/scenes');fs.mkdirSync(scenes,{recursive:true});
 const template=JSON.parse(fs.readFileSync(path.join(root,'obs-template.json'),'utf8'));
 const initial={name:'기존 방송',current_scene:'방송',current_program_scene:'방송',sources:[{id:'scene',name:'방송',uuid:'existing-scene',settings:{id_counter:1,items:[]}}],groups:[],scene_order:[{name:'방송'}],modules:{'scripts-tool':[{path:'other.lua',settings:{}}]}};
 fs.writeFileSync(path.join(scenes,'Existing.json'),JSON.stringify(initial));fs.mkdirSync(path.join(obs,'basic/profiles/Test'),{recursive:true});fs.writeFileSync(path.join(obs,'basic/profiles/Test/basic.ini'),'[Video]\nBaseCX=1920\nBaseCY=1080\nFPSType=0\nFPSCommon=30\n');
-fs.writeFileSync(path.join(obs,'user.ini'),'[BasicWindow]\nExtraBrowserDocks=[]\n[Basic]\nProfileDir=Test\nSceneCollection=기존 방송\nSceneCollectionFile=Existing\n');
+const docks=[{title:'키라 앰프 DLC',url:'file:///C:/Users/test/KiraSetlistDLC/dock-launcher.html'},{title:'키라 셋리스트',url:'http://127.0.0.1:4317/control?dock=1'},{title:'채팅',url:'https://example.com/chat'},{title:'키라 셋리스트',url:'https://example.com/custom'}];
+fs.writeFileSync(path.join(obs,'user.ini'),'[BasicWindow]\nExtraBrowserDocks='+JSON.stringify(docks)+'\n[Basic]\nProfileDir=Test\nSceneCollection=기존 방송\nSceneCollectionFile=Existing\n');
+const profilePath=path.join(obs,'basic/profiles/Test/basic.ini'),profileBefore=fs.readFileSync(profilePath,'utf8');
 const dest=path.join(temp,'installed'),env={...process.env,USERPROFILE:temp,APPDATA:roaming};
 const run=()=>execFileSync(process.execPath,[path.join(root,'install.mjs'),dest],{env,encoding:'utf8'});run();
 assert.deepEqual(JSON.parse(fs.readFileSync(path.join(scenes,'Existing.json'),'utf8')),initial);
 let collection=JSON.parse(fs.readFileSync(path.join(scenes,'Kira_Setlist_Integrated.json'),'utf8'));const browser=collection.sources.find(s=>s.id==='browser_source');assert.equal(browser.settings.width,3840);assert.equal(browser.settings.fps,60);assert.ok(collection.modules['scripts-tool'].some(s=>s.path==='other.lua'));
 fs.writeFileSync(path.join(dest,'data/state.json'),'PERSONAL DATA SENTINEL');fs.writeFileSync(path.join(dest,'public/artwork/personal.png'),'PERSONAL ART');run();assert.equal(fs.readFileSync(path.join(dest,'data/state.json'),'utf8'),'PERSONAL DATA SENTINEL');assert.equal(fs.readFileSync(path.join(dest,'public/artwork/personal.png'),'utf8'),'PERSONAL ART');
 collection=JSON.parse(fs.readFileSync(path.join(scenes,'Kira_Setlist_Integrated.json'),'utf8'));assert.equal(collection.sources.filter(s=>s.name==='키라 통합 셋리스트 오버레이').length,1);
-console.log('설치 · OBS 자동 등록 · 기존 장면 보존 · 재설치 데이터 보존 확인');
+assert.equal(fs.readFileSync(profilePath,'utf8'),profileBefore,'broadcast profile is unchanged, including 30fps');
+const afterINI=fs.readFileSync(path.join(obs,'user.ini'),'utf8');const finalDocks=JSON.parse(afterINI.match(/^ExtraBrowserDocks=(.*)$/m)[1]);
+assert.equal(finalDocks.filter(d=>d.title==='키라 통합 셋리스트').length,1);assert.equal(finalDocks.filter(isLegacyKiraDock).length,0);assert.ok(finalDocks.some(d=>d.title==='채팅'));assert.ok(finalDocks.some(d=>d.url==='https://example.com/custom'));
+const customRoot=path.join(temp,'별도 드라이브 OBS'),exe=path.join(customRoot,'bin/64bit/obs64.exe');fs.mkdirSync(path.dirname(exe),{recursive:true});fs.writeFileSync(exe,'fixture');
+assert.equal(resolveOBSConfig({exe,appData:roaming}).config,obs);
+fs.writeFileSync(path.join(customRoot,'portable_mode.txt'),'');
+assert.throws(()=>resolveOBSConfig({exe,appData:roaming}),/선택한 OBS/);
+const portableConfig=path.join(customRoot,'config/obs-studio');fs.cpSync(obs,portableConfig,{recursive:true});
+assert.equal(resolveOBSConfig({exe,appData:roaming}).config,portableConfig);
+const standardSnapshot=fs.readFileSync(path.join(obs,'user.ini'),'utf8');
+execFileSync(process.execPath,[path.join(root,'install.mjs'),dest,'--obs-exe',exe],{env,encoding:'utf8'});
+assert.equal(fs.readFileSync(path.join(obs,'user.ini'),'utf8'),standardSnapshot,'portable install must not write standard OBS');
+assert.ok(fs.readdirSync(path.join(portableConfig,'kira-install-backups')).length>0);
+fs.unlinkSync(path.join(customRoot,'portable_mode.txt'));assert.equal(resolveOBSConfig({exe,portable:true,appData:roaming}).config,portableConfig);
+assert.throws(()=>resolveOBSConfig({exe:path.join(temp,'missing/obs64.exe'),appData:roaming}),/obs64.exe/);
+if(process.platform==='win32'){
+ // Simulate an idle OBS in the wrapper only; no real user configuration is used.
+ const quote=s=>"'"+s.replaceAll("'","''")+"'";
+ const wrapper=path.join(temp,'verify-powershell.ps1');
+ fs.writeFileSync(wrapper,'\ufefffunction Get-Process {}\n& '+quote(path.join(root,'install.ps1'))+' -Destination '+quote(dest)+' -ObsExe '+quote(exe)+' -Portable -NoLaunch\nif(!$?){exit 1}\n');
+ execFileSync('powershell.exe',['-NoProfile','-ExecutionPolicy','Bypass','-File',wrapper],{env,encoding:'utf8'});
+ assert.equal(fs.readFileSync(path.join(obs,'user.ini'),'utf8'),standardSnapshot);
+ assert.equal(fs.readFileSync(profilePath,'utf8'),profileBefore);
+}
+console.log('중복 독 정리 · 타 독 보존 · 재설치 데이터 · 방송 프로필/FPS 보존 · 한글/공백 경로 · 포터블 설정 격리 · 잘못된 경로 중단 확인');

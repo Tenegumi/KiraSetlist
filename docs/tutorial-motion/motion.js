@@ -7,7 +7,7 @@ function render(t){
  if(n!==shown){shown=n;$('phase').textContent=s.phase;$('title').textContent=s.title;$('number').textContent=`${String(n+1).padStart(2,'0')} / ${scenes.length}`;$('chapters').value=n;$('line').textContent=s.line;
   $('notes').replaceChildren(...s.notes.map(text=>{const p=document.createElement('p');p.textContent=text;return p;}));
   const wide=s.image?.startsWith('unified-')||['design-switch.png','queue-controls.png','settings-opacity.png','settings-rotate.png'].includes(s.image);$('visual').className=s.image?(wide?'wide':''):'text';
-  $('capture-label').textContent=s.image?(s.image.startsWith('unified-')?'실제 OBS 출력':s.image==='installer.png'?'실제 설치 창 · 화면 렌더':s.image==='default-art.png'||s.image==='dlc-heart-detail.png'?'앱에서 사용하는 이미지':'실제 앱 캡처 · 예시 목록'):'따라 하기 안내';
+  $('capture-label').textContent=s.image?(s.image.startsWith('manual-')?'등록 입력값 안내 카드':s.image.startsWith('unified-')?'실제 OBS 출력':s.image==='installer.png'?'실제 설치 창 · 화면 렌더':s.image==='default-art.png'||s.image==='dlc-heart-detail.png'?'앱에서 사용하는 이미지':'실제 앱 캡처 · 예시 목록'):'따라 하기 안내';
   $('footnote').textContent=s.image?'클릭 표시는 안내용이에요. 버튼은 실제 OBS 독에서 눌러 주세요.':'현재 통합 설치본 기준 · 노래나 음원을 재생하지 않아요.';
   window.frameReady=false;ready=s.image?new Promise((resolve,reject)=>{const img=$('shot');img.onload=()=>{window.frameReady=true;resolve()};img.onerror=()=>reject(Error('Image failed: '+s.image));img.alt=s.title;img.src='assets/'+s.image;}):Promise.resolve().then(()=>window.frameReady=true);
  }

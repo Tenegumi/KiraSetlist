@@ -29,6 +29,6 @@ if(!stills){
  run(['-y','-framerate','8','-i',path.join(out,'motion-frames/%05d.jpg'),'-t',String(count*length),'-c:v','libx264','-preset','fast','-crf','19','-r','24','-pix_fmt','yuv420p','-movflags','+faststart',path.join(out,'kira-integrated-tutorial.mp4')]);
  run(['-y','-ss','48','-t','6','-i',path.join(out,'kira-integrated-tutorial.mp4'),'-vf','fps=8,scale=768:-1:flags=lanczos,split[a][b];[a]palettegen[p];[b][p]paletteuse','-loop','0',path.join(src,'examples/movement.gif')]);
  fs.cpSync(src,path.join(out,'viewer'),{recursive:true});fs.copyFileSync(path.join(src,'narration.txt'),path.join(out,'narration.txt'));
- fs.writeFileSync(path.join(out,'README.txt'),'키라 통합 셋리스트 v1.2.0 영상 가이드\n\n32장면 / 3분 12초 / 1920×1080 / 무음\n종이 인형 느낌의 캐릭터 움직임: 초당 8컷 / 영상 파일: 24fps\nimages: 안내 이미지 128장\nsubtitles.srt: 자막 / narration.txt: 내레이션 대사\nviewer/index.html: 단계 선택·이전·다음·일시정지\n\n실제 OBS 출력과 별도 예시 데이터의 앱 캡처를 사용합니다.\n설치 창은 실제 설치 프로그램의 컨트롤을 화면에 렌더링했습니다.\n파일 다운로드·압축 해제 등의 장면은 따라 하기 안내입니다.\n');
+ fs.writeFileSync(path.join(out,'README.txt'),`키라 통합 셋리스트 v1.2.1 영상 가이드\n\n수동 연결을 먼저 안내하고 자동 설치는 끝부분의 선택 사항입니다.\n${count}장면 / ${count*length}초 / 1920×1080 / 무음\n캐릭터 움직임: 초당 8컷 / 영상 파일: 24fps\nimages: 안내 이미지 ${count*4}장\nsubtitles.srt: 자막 / narration.txt: 내레이션 대사\nviewer/index.html: 단계 선택·이전·다음·일시정지\n\n실제 OBS 출력과 별도 예시 데이터의 앱 캡처를 사용합니다.\n설치 창은 실제 프로그램 컨트롤을 화면에 렌더링했습니다.\n입력값 안내 카드와 파일 다운로드·압축 해제 장면은 실제 OBS 캡처가 아닌 따라 하기 안내입니다.\n`);
  console.log(JSON.stringify({video:path.join(out,'kira-integrated-tutorial.mp4'),seconds:count*length,images:count*4,errors}));
 }

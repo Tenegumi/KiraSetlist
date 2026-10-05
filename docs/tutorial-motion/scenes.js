@@ -2,7 +2,7 @@ window.TUTORIAL_SCENES=[
   {
     "phase": "시작하기",
     "title": "오늘 방송에 맞춰 골라 쓰자",
-    "line": "원본과 앰프 DLC가 한 프로그램에 들어 있어. 설치도 한 번이면 돼!",
+    "line": "수동 ZIP을 풀고 OBS에 직접 연결해 보자. 원본과 앰프 DLC를 같이 쓸 수 있어!",
     "image": "unified-amp.png",
     "notes": [
       "원본 + 앰프 DLC 통합본",
@@ -28,71 +28,87 @@ window.TUTORIAL_SCENES=[
     ]
   },
   {
-    "phase": "설치 · 1",
-    "title": "방송이 끝나면 OBS를 닫아 줘",
-    "line": "설치하기 전에 OBS를 완전히 닫아 줘. 설치가 끝나면 다시 열릴 거야.",
+    "phase": "직접 연결 · 1",
+    "title": "수동 ZIP부터 받아 줘",
+    "line": "GitHub의 직접 연결하는 수동 ZIP을 받아 줘. 설치 프로그램 없이 연결할 거야.",
     "image": null,
     "notes": [
-      "방송·녹화가 끝났는지 확인",
-      "OBS 종료 → 설치 → OBS 자동 실행"
+      "파일: KiraSetlist-Manual-1.2.1.zip",
+      "Source code 대신 수동 ZIP 받기"
     ]
   },
   {
-    "phase": "설치 · 2",
-    "title": "설치 ZIP을 받아 줘",
-    "line": "GitHub 소개의 설치 ZIP 버튼을 눌러 줘. Source code는 설치 파일이 아니야.",
+    "phase": "직접 연결 · 2",
+    "title": "압축을 풀고 폴더를 정해 줘",
+    "line": "문서 안에 폴더를 만들고 전부 압축 해제해. 연결한 다음에는 폴더를 옮기지 말아 줘.",
     "image": null,
     "notes": [
-      "받을 파일: KiraSetlist-Integrated-1.2.0.zip",
-      "Releases → Assets → 설치 ZIP"
+      "모두 압축 풀기 → 폴더 보관",
+      "kira-unified.lua · runtime · public · data"
     ]
   },
   {
-    "phase": "설치 · 3",
-    "title": "먼저 압축을 전부 풀기",
-    "line": "ZIP에서 모든 파일을 압축 해제해 줘. 안에 있는 app 폴더도 같이 필요해.",
+    "phase": "직접 연결 · 3",
+    "title": "OBS에 스크립트를 등록해 줘",
+    "line": "도구, 스크립트, 더하기를 누르고 kira-unified.lua를 골라 줘. OBS와 같이 실행돼.",
     "image": null,
     "notes": [
-      "ZIP 우클릭 → 모두 압축 풀기",
-      "폴더 안의 설치하기.exe 열기"
+      "도구 → 스크립트 → +",
+      "압축 푼 폴더 / kira-unified.lua"
     ]
   },
   {
-    "phase": "설치 · 4",
-    "title": "설치하고 OBS에 적용을 눌러 줘",
-    "line": "이 버튼이 프로그램, 조작 독, 오버레이를 한 번에 연결해 줘.",
-    "image": "installer.png",
+    "phase": "직접 연결 · 4",
+    "title": "사용자 지정 브라우저 독 열기",
+    "line": "독 메뉴의 사용자 지정 브라우저 독을 열어 줘. 이게 방송 중 조작할 창이야.",
+    "image": "manual-dock.svg",
     "notes": [
-      "별도 Node 설치는 필요 없어",
-      "이 창에서 설치 완료 안내 기다리기"
+      "독 → 사용자 지정 브라우저 독",
+      "독 이름: 키라 통합 셋리스트"
+    ]
+  },
+  {
+    "phase": "직접 연결 · 5",
+    "title": "주소를 붙여 넣고 적용",
+    "line": "가이드에서 독 주소를 복사해 붙여 넣고 적용을 눌러. 새 독을 편한 자리에 붙여 줘.",
+    "image": "manual-dock.svg",
+    "notes": [
+      "http://127.0.0.1:4320/control?dock=1",
+      "적용 → 새 독 제목을 끌어 고정"
+    ]
+  },
+  {
+    "phase": "직접 연결 · 6",
+    "title": "브라우저 소스를 하나 추가",
+    "line": "방송 장면의 소스에서 더하기, 브라우저를 선택해. 이 소스가 방송에 보여.",
+    "image": "manual-source.svg",
+    "notes": [
+      "소스 → + → 브라우저",
+      "로컬 파일 체크 해제 → overlay 주소"
+    ]
+  },
+  {
+    "phase": "직접 연결 · 7",
+    "title": "너비와 FPS를 넣어 줘",
+    "line": "너비 3840, 높이 2160, 사용자 지정 FPS 60을 넣어 줘. 방송 FPS는 자동으로 바꾸지 않아.",
+    "image": "manual-source.svg",
+    "notes": [
+      "3840 × 2160 · 사용자 지정 FPS 60",
+      "보이지 않을 때 종료는 체크 해제"
+    ]
+  },
+  {
+    "phase": "직접 연결 · 8",
+    "title": "화면에 맞추면 연결 끝",
+    "line": "소스를 우클릭하고 변환, 화면에 맞추기를 눌러. 캐릭터와 배경 위에 소스를 둬.",
+    "image": "unified-amp.png",
+    "notes": [
+      "변환 → 화면에 맞추기",
+      "빈 리스트라면 곡 추가 → 부르기"
     ],
     "target": [
-      0.49,
-      0.42
-    ]
-  },
-  {
-    "phase": "설치 · 5",
-    "title": "OBS가 열리면 장면 모음 확인",
-    "line": "장면 모음 이름이 키라 통합 셋리스트인지 확인해 줘.",
-    "image": null,
-    "notes": [
-      "키라 통합 셋리스트 (원본 + DLC)",
-      "기존 장면 모음은 보관돼 있어"
-    ]
-  },
-  {
-    "phase": "설치 · 6",
-    "title": "OBS 오른쪽에서 바로 조작하기",
-    "line": "키라 통합 셋리스트 독에서 조작해. 별도 웹 브라우저를 켤 필요 없어.",
-    "image": "dock-list.png",
-    "notes": [
-      "독이 없다면: 독 메뉴에서 통합 셋리스트 체크",
-      "독 제목을 끌어서 편한 자리에 고정"
-    ],
-    "target": [
-      0.5,
-      0.15
+      0.88,
+      0.3
     ]
   },
   {
@@ -377,18 +393,18 @@ window.TUTORIAL_SCENES=[
   },
   {
     "phase": "OBS 확인",
-    "title": "오버레이는 4K · 60fps",
-    "line": "설치가 브라우저 소스를 3840 × 2160, FPS 60으로 설정해 줘.",
+    "title": "방송 FPS는 내가 골라 줘",
+    "line": "브라우저 소스는 4K 60fps야. 방송도 60fps로 하려면 OBS 비디오 설정에서 직접 골라 줘.",
     "image": null,
     "notes": [
-      "OBS 소스 속성: 3840 × 2160 · 사용자 지정 FPS 60",
-      "방송 캔버스 크기는 그대로 · 소스를 맞춰 축소"
+      "OBS 설정 → 비디오 → 일반 FPS 값 60",
+      "방송 해상도 · 인코더 · 오디오는 그대로"
     ]
   },
   {
     "phase": "다음 방송",
     "title": "다음부터는 OBS만 켜면 돼",
-    "line": "OBS를 켜면 조작 독과 셋리스트가 다시 연결돼. 목록도 자동 저장돼.",
+    "line": "이 장면 모음을 열면 등록한 스크립트가 실행돼. 곡 목록도 자동 저장돼.",
     "image": "dock-list.png",
     "notes": [
       "오늘의 리스트·현재 곡·직접 등록 곡 자동 저장",
@@ -401,12 +417,40 @@ window.TUTORIAL_SCENES=[
   },
   {
     "phase": "업데이트·백업",
-    "title": "다시 설치해도 내 목록은 남아",
-    "line": "업데이트는 OBS를 닫고 새 ZIP의 설치하기를 실행해. 중요한 방송 전엔 백업해 둬.",
+    "title": "내 데이터를 먼저 보관해 줘",
+    "line": "수동 업데이트 전에 OBS를 닫고 data와 public/artwork 폴더를 복사해 둬.",
     "image": null,
     "notes": [
-      "사용자 폴더 / KiraSetlistUnified",
-      "백업: data 폴더 + public/artwork 폴더"
+      "내 목록: data · 내 이미지: public/artwork",
+      "프로그램만 교체 · 기존 데이터 보존"
+    ]
+  },
+  {
+    "phase": "선택 사항 · 자동 설치",
+    "title": "버튼으로 연결하고 싶다면",
+    "line": "자동 설치는 두 번째 선택이야. OBS를 닫고 자동 설치 ZIP의 설치하기를 열어 줘.",
+    "image": "installer.png",
+    "notes": [
+      "설치하고 OBS에 적용 → 새 장면 모음 추가",
+      "조작 독 · 시작 스크립트 자동 등록"
+    ],
+    "target": [
+      0.5,
+      0.56
+    ]
+  },
+  {
+    "phase": "선택 사항 · 자동 설치",
+    "title": "내 OBS 경로도 확인해 줘",
+    "line": "다른 드라이브의 OBS는 경로 선택, 포터블은 체크해. 방송 FPS나 오디오 설정은 바꾸지 않아.",
+    "image": "installer.png",
+    "notes": [
+      "OBS 경로 선택 → 사용하는 obs64.exe",
+      "기존 OBS 설정은 먼저 백업"
+    ],
+    "target": [
+      0.82,
+      0.4
     ]
   },
   {
@@ -415,8 +459,8 @@ window.TUTORIAL_SCENES=[
     "line": "노래책에서 곡을 담고 부르기를 누르면 준비 끝이야. 오늘도 즐거운 방송 해!",
     "image": "unified-amp.png",
     "notes": [
-      "앱 아래 설치·사용 안내에서 다시 보기",
-      "GitHub에서 영상·이미지·설치 ZIP 받기"
+      "노래책 → + → 부르기",
+      "다시 보기: 그림 가이드와 튜토리얼 영상"
     ],
     "target": [
       0.88,
