@@ -5,8 +5,7 @@ import {createRoom,access,keysRevoked,payload,mutate} from '../lib/rooms.mjs';
 import {liveCatalog,syncNotion} from '../lib/live-catalog.mjs';
 import {authorizeNotionSync} from '../lib/manual-sync.mjs';
 import {readBody,ClientError} from '../lib/request.mjs';
-import {readJson,writeJson,readImage,writeImage,removeImage,redisConfigured,storageConfigured,storageHealth,StorageUnavailable,StorageConflict} from '../lib/storage.mjs';
-import {serveEvents} from '../lib/events.mjs';
+import {readJson,writeJson,readImage,writeImage,removeImage,createSubscription,removeSubscription,subscriptionConnection,redisConfigured,storageConfigured,storageHealth,StorageUnavailable,StorageConflict} from '../lib/storage.mjs';
 const roomPath=id=>`rooms/${id}.json`;
 const roomCache=new Map(),roomReads=new Map();
 async function read(id,cached=false){
@@ -28,6 +27,7 @@ export default async function handler(req,res){
  try{
   // Old clients poll with a revision every second. Reject before any storage read.
   if(op==='state'&&req.method==='GET'&&url.searchParams.has('revision'))return json(res,410,{code:'legacy_polling_removed',error:'이전 반복 조회 방식은 종료됐어요. OBS 독과 브라우저 소스를 새로고침해 주세요.'});
+  if(op==='events')return json(res,410,{code:'legacy_stream_removed',error:'실시간 연결 방식이 바뀌었어요. OBS 독과 브라우저 소스를 새로고침해 주세요.'});
   if(op==='sync-notion'){
    res.setHeader('Allow','POST');
    await authorizeNotionSync(req);
@@ -42,7 +42,10 @@ export default async function handler(req,res){
   }
   if(op==='rooms'&&req.method==='POST'){
    if(!redisConfigured())return json(res,503,{error:'실시간 저장소 연결을 준비 중이에요.',code:'storage_unavailable',retryAfter:60});
-   await readBody(req);const created=createRoom();await write(created.id,created.room);return json(res,201,{room:created.id,owner:created.owner,view:created.view});
+   await readBody(req);const created=createRoom();
+   created.room.subscription=await createSubscription(created.id);
+   try{await write(created.id,created.room);}catch(error){await removeSubscription(created.id).catch(()=>{});throw error;}
+   return json(res,201,{room:created.id,owner:created.owner,view:created.view});
   }
   const id=url.searchParams.get('room');if(!/^[a-f0-9]{36}$/.test(id||''))return json(res,400,{error:'독 주소 또는 방송 화면 주소를 다시 붙여 넣어 주세요.'});
   const token=req.headers.authorization?.replace(/^Bearer /,'')||(op==='image'?url.searchParams.get('key'):null);
@@ -51,7 +54,7 @@ export default async function handler(req,res){
   if(keysRevoked(data.room))return json(res,403,{code:'room_keys_revoked',error:'이 OBS 주소는 폐기됐어요. 첫 화면에서 새 링크를 발급해 주세요.'});
   const role=access(data.room,token);
   if(!role)return json(res,403,{error:'접근할 수 없는 주소예요. 저장해 둔 OBS 주소를 사용해 주세요.'});
-  if(op==='events'&&req.method==='GET')return await serveEvents(req,res,id,token,read);
+  if(op==='connection'&&req.method==='GET')return json(res,200,subscriptionConnection(id,data.room));
   if(op==='image'&&req.method==='GET'){
    const image=url.searchParams.get('image');if(!/^[a-f0-9-]{36}\.(png|jpg|webp)$/.test(image||''))return json(res,400,{error:'이미지 주소가 올바르지 않아요.'});
    const result=await readImage(`rooms/${id}/images/${image}`);if(!result)return json(res,404,{error:'이미지를 찾을 수 없어요.'});
