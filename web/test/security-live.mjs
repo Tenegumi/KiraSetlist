@@ -14,7 +14,8 @@ assert.equal((await request('action',{data:{type:'clear'},origin:'https://evil.e
 for(const raw of ['null','[]','{"bad":']){const r=await request('action',{raw});assert.equal(r.status,400,`body=${raw}, response=${r.body}`);assert.ok(!r.body.includes('SyntaxError'));}
 assert.equal((await request('action',{data:{type:'settings',unused:'x'.repeat(17000)}})).status,413);
 assert.equal((await request('image',{extra:{image:'../../.env.local'}})).status,400);
-assert.equal((await fetch(base+'/api/sync-notion')).status,401);
+assert.equal((await fetch(base+'/api/sync-notion')).status,405);
+assert.equal((await fetch(base+'/api/sync-notion',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'})).status,401);
 for(const file of ['/.env.local','/.vercel/project.json','/source/data/state.json','/data/state.json'])assert.equal((await fetch(base+file)).status,404);
 for(const path of ['/','/control','/overlay','/guide','/editions/amp/overlay.html']){const r=await fetch(base+path);assert.ok(r.headers.get('content-security-policy')?.includes("script-src 'self'"),path);assert.equal(r.headers.get('referrer-policy'),'no-referrer');}
 const title='<img src=x onerror="window.__securityXss=1">',artist='<svg onload="window.__securityXss=1">';
@@ -32,4 +33,4 @@ try{
  const frame=overlay.frameLocator('#edition-frame');await frame.locator('#song-title').filter({hasText:title}).waitFor();assert.equal(await frame.locator('#song-title').innerText(),title);assert.equal(await overlay.frames()[1].evaluate(()=>window.__securityXss||0),0);
  assert.deepEqual(violations,[]);
 }finally{await browser.close();}
-console.log('PASS: tenant isolation, viewer write/export denial, CSRF, malformed/oversized bodies, path traversal, cron authentication, private file exposure, live CSP, literal HTML rendering without script execution.');
+console.log('PASS: tenant isolation, viewer write/export denial, CSRF, malformed/oversized bodies, path traversal, manual sync authentication, private file exposure, live CSP, literal HTML rendering without script execution.');

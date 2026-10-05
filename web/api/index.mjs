@@ -3,7 +3,7 @@ import {Readable} from 'node:stream';
 import {randomUUID} from 'node:crypto';
 import {createRoom,access,payload,mutate} from '../lib/rooms.mjs';
 import {liveCatalog,syncNotion} from '../lib/live-catalog.mjs';
-import {timingSafeEqual} from 'node:crypto';
+import {authorizeNotionSync} from '../lib/manual-sync.mjs';
 import {readBody,ClientError} from '../lib/request.mjs';
 import {readJson,writeJson,readImage,writeImage,removeImage,redisConfigured,storageConfigured,storageHealth,StorageUnavailable,StorageConflict} from '../lib/storage.mjs';
 import {serveEvents} from '../lib/events.mjs';
@@ -24,11 +24,11 @@ async function write(id,room,etag){const result=await writeJson(roomPath(id),roo
 function json(res,status,value){res.statusCode=status;res.setHeader('Content-Type','application/json; charset=utf-8');res.setHeader('Cache-Control','no-store');res.end(JSON.stringify(value));}
 export default async function handler(req,res){
  const url=new URL(req.url,'https://kira.invalid'),op=url.searchParams.get('op')||req.url.split('?')[0].replace(/^\/api\/?/,'');
- if(op==='health'){const health=await storageHealth();return json(res,health.ready?200:503,{...health,mode:'web',notionSync:!!process.env.CRON_SECRET});}
+ if(op==='health'){const health=await storageHealth();return json(res,health.ready?200:503,{...health,mode:'web',notionSync:!!(process.env.NOTION_SYNC_SECRET||process.env.CRON_SECRET),notionSyncMode:'manual'});}
  try{
-  if(op==='sync-notion'&&req.method==='GET'){
-   const expected=Buffer.from(`Bearer ${process.env.CRON_SECRET||''}`),actual=Buffer.from(req.headers.authorization||'');
-   if(!process.env.CRON_SECRET||actual.length!==expected.length||!timingSafeEqual(actual,expected))return json(res,401,{error:'예약 갱신 전용 요청입니다.'});
+  if(op==='sync-notion'){
+   res.setHeader('Allow','POST');
+   await authorizeNotionSync(req);
    return json(res,200,await syncNotion());
   }
   if(op==='catalog'&&req.method==='GET')return json(res,200,await liveCatalog());
