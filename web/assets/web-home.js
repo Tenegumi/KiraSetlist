@@ -1,5 +1,9 @@
+import {browserVersion,obsLinks,recoveryUrl} from './browser-entry.js';
+const release=browserVersion;
+const recover=recoveryUrl({href:location.href,documentRelease:document.querySelector('meta[name="kira-release"]')?.content,release});
+if(recover)location.replace(recover);
 const button=document.getElementById('create-room'),status=document.getElementById('status');
-function urls(c){return {dock:`${location.origin}/control?dock=1#${new URLSearchParams({room:c.room,owner:c.owner,view:c.view})}`,overlay:`${location.origin}/overlay#${new URLSearchParams({room:c.room,view:c.view})}`};}
+function urls(c){return obsLinks({...c,origin:location.origin,release});}
 try{const saved=JSON.parse(localStorage.getItem('kira-web-room'));if(saved?.room&&saved.owner&&saved.view){const link=document.getElementById('return-room');link.hidden=false;link.href=urls(saved).dock;}}catch{}
 button.addEventListener('click',async()=>{
  button.disabled=true;status.textContent='OBS에 붙일 링크를 발급하고 있어요…';

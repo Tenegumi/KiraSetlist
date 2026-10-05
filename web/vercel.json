@@ -17,6 +17,8 @@
   {"source":"/overlay","headers":[{"key":"Cache-Control","value":"no-store"}]},
   {"source":"/:file.html","headers":[{"key":"Cache-Control","value":"no-store"}]},
   {"source":"/editions/:edition/overlay.html","headers":[{"key":"Cache-Control","value":"no-store"}]},
+  {"source":"/:entry(cloud-transport|browser-entry|web-home|control|overlay).js","headers":[{"key":"Cache-Control","value":"no-store"}]},
+  {"source":"/editions/:edition/overlay.js","headers":[{"key":"Cache-Control","value":"no-store"}]},
   {"source": "/(.*)", "headers": [
     {"key": "X-Content-Type-Options", "value": "nosniff"},
     {"key": "Referrer-Policy", "value": "no-referrer"},
