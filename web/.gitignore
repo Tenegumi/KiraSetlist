@@ -3,6 +3,8 @@ public/
 source/
 .vercel/
 .env*
+.agents/
+skills-lock.json
 !.env.example
 test-results/
 

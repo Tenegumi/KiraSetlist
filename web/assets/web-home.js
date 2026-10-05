@@ -4,7 +4,8 @@ try{const saved=JSON.parse(localStorage.getItem('kira-web-room'));if(saved?.room
 button.addEventListener('click',async()=>{
  button.disabled=true;status.textContent='OBS에 붙일 링크를 발급하고 있어요…';
  try{
-  const res=await fetch('/api?op=rooms',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'}),credentials=await res.json();
+  const res=await fetch('/api?op=rooms',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}',signal:AbortSignal.timeout(15000)});
+  let credentials;try{credentials=await res.json();}catch{throw Error(res.status===429?'링크 요청이 잠시 몰렸어요. 1분 후 다시 눌러 주세요.':'서버 연결을 확인해 주세요.');}
   if(!res.ok)throw Error(credentials.error||'방송 공간을 만들지 못했어요.');
   try{localStorage.setItem('kira-web-room',JSON.stringify(credentials));}catch{}
   const links=urls(credentials),dialog=document.createElement('dialog');
@@ -14,5 +15,5 @@ button.addEventListener('click',async()=>{
   for(const b of dialog.querySelectorAll('[data-copy]'))b.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(links[b.dataset.copy]);b.textContent='복사했어요 ✓';}catch{dialog.querySelector(b.dataset.copy==='dock'?'#dock-link':'#overlay-link').select();}});
   dialog.showModal();status.textContent='방송 공간이 만들어졌어요. 주소를 OBS에 붙여 주세요.';
   const returnLink=document.getElementById('return-room');returnLink.href=links.dock;returnLink.hidden=false;
- }catch(e){status.textContent=e.message;}finally{button.disabled=false;}
+ }catch(e){status.textContent=e.name==='TimeoutError'?'연결이 지연되고 있어요. 잠시 후 다시 눌러 주세요.':e.message;}finally{button.disabled=false;}
 });
