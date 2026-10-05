@@ -12,7 +12,12 @@
     {"source": "/guide", "destination": "/guide.html"},
     {"source": "/demo", "destination": "/demo.html"}
   ],
-  "headers": [{"source": "/(.*)", "headers": [
+  "headers": [
+  {"source":"/control","headers":[{"key":"Cache-Control","value":"no-store"}]},
+  {"source":"/overlay","headers":[{"key":"Cache-Control","value":"no-store"}]},
+  {"source":"/:file.html","headers":[{"key":"Cache-Control","value":"no-store"}]},
+  {"source":"/editions/:edition/overlay.html","headers":[{"key":"Cache-Control","value":"no-store"}]},
+  {"source": "/(.*)", "headers": [
     {"key": "X-Content-Type-Options", "value": "nosniff"},
     {"key": "Referrer-Policy", "value": "no-referrer"},
     {"key": "X-Frame-Options", "value": "SAMEORIGIN"}

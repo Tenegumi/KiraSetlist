@@ -1,7 +1,11 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {createHash} from 'node:crypto';
 const dir=path.dirname(fileURLToPath(import.meta.url));
+// A policy/transport change must also change document ETags. OBS can retain an
+// old document policy while loading newer JavaScript from its browser cache.
+const release=createHash('sha256').update(await fs.readFile(path.join(dir,'vercel.json'))).update(await fs.readFile(path.join(dir,'assets/cloud-transport.js'))).update(await fs.readFile(path.join(dir,'assets/direct-events.js'))).digest('hex').slice(0,12);
 const original=path.resolve(dir,'../app'),app=path.join(dir,'source');
 try{
  await fs.access(original);
@@ -21,7 +25,7 @@ await fs.writeFile(path.join(dir,'public/catalog.json'),JSON.stringify(songs));
 for(const rel of ['control.js','overlay.js','editions/amp/overlay.js','editions/original/overlay.js']){
  const file=path.join(dir,'public',rel);
  let js=await fs.readFile(file,'utf8');
- js="import '/cloud-transport.js';\n"+js;
+ js=`import '/cloud-transport.js?v=${release}';\n`+js;
  if(rel==='overlay.js')js=js.replace("${preview?'?preview=1':''}`","${preview?'?preview=1':''}${location.hash}`");
  if(rel==='control.js')js=js.replaceAll('`${location.origin}/overlay`','window.kiraCloud.overlayUrl');
  await fs.writeFile(file,js);
@@ -31,4 +35,10 @@ html=html.replace('KIRA / ORIGINAL + AMPLIFIER DLC','KIRA / WEB · ORIGINAL + AM
 html=html.replace('<button id="copy-overlay"','<button id="copy-dock" class="quiet" type="button">독 주소 복사</button><button id="copy-overlay"');
 await fs.writeFile(path.join(dir,'public/control.html'),html);
 await fs.appendFile(path.join(dir,'public/control.css'),'\n.dock #copy-overlay{display:inline-block}.header-actions{flex-wrap:wrap}\n');
+for(const rel of ['index.html','control.html','overlay.html','editions/amp/overlay.html','editions/original/overlay.html']){
+ const file=path.join(dir,'public',rel),html=await fs.readFile(file,'utf8');
+ await fs.writeFile(file,html.replace('<head>',`<head><meta name="kira-release" content="${release}">`));
+}
+const transport=path.join(dir,'public/cloud-transport.js');
+await fs.writeFile(transport,(await fs.readFile(transport,'utf8')).replace("'./direct-events.js'",`'./direct-events.js?v=${release}'`));
 console.log(`Built web edition: ${songs.length} songs. Personal state and local runtime excluded.`);
