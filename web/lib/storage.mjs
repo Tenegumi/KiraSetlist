@@ -73,13 +73,21 @@ export async function writeJson(path,value,etag,notification) {
  const result=await provider('blob',()=>put(path,JSON.stringify(value),{access:'private',contentType:'application/json',addRandomSuffix:false,allowOverwrite:!!etag,...(etag?{ifMatch:etag}:{})}));
  return {value,etag:result.etag};
 }
-export async function subscribeRoom(id,signal) {
- if(!redisConfigured())throw new StorageUnavailable();
+export const subscriberName=id=>`kira_sub_${id}`;
+// This credential can ONLY subscribe to one exact channel. It cannot read keys,
+// publish, list users, or subscribe to another room. The admin token stays server-side.
+export async function createSubscription(id) {
+ const user=subscriberName(id),token=await redis(['ACL','GENTOKEN',user]);
+ await redis(['ACL','SETUSER',user,'reset','on','>'+token,'-@all','resetkeys','resetchannels','&'+roomChannel(id),'+subscribe']);
+ return {token};
+}
+export async function removeSubscription(id){await redis(['ACL','DELUSER',subscriberName(id)]);}
+export function subscriptionConnection(id,room) {
  const endpoint=process.env.UPSTASH_REDIS_REST_URL||process.env.KV_REST_API_URL;
- const token=process.env.UPSTASH_REDIS_REST_TOKEN||process.env.KV_REST_API_TOKEN;
- const response=await fetch(`${endpoint.replace(/\/$/,'')}/subscribe/${encodeURIComponent(roomChannel(id))}`,{method:'POST',headers:{Authorization:`Bearer ${token}`,Accept:'text/event-stream'},signal});
- if(!response.ok||!response.body)throw new StorageUnavailable();
- return response.body;
+ const url=new URL(endpoint);
+ if(url.protocol!=='https:'||!url.hostname.endsWith('.upstash.io')||url.username||url.password||!room.subscription?.token)throw new StorageUnavailable();
+ const channel=roomChannel(id);
+ return {url:`${url.origin}/subscribe/${encodeURIComponent(channel)}`,channel,token:room.subscription.token};
 }
 export async function writeImage(path,bytes,contentType) {
  if(redisConfigured())return writeJson('images/'+path,{data:bytes.toString('base64'),contentType});

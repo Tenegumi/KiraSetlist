@@ -1,5 +1,7 @@
 # 웹 링크 발급 장애와 복구 · 2026-10-05
 
+이 문서는 첫 복구 당시의 기록입니다. 이후 모든 기존 키를 폐기했고, 50초마다 Vercel 이벤트 연결을 갱신하던 방식도 종료했습니다. 현재 연결·과금 방식은 [대기 비용 개선 기록](WEB-IDLE-COST.md)을 확인해 주세요. 현재는 새 OBS 주소를 발급해야 합니다.
+
 ## 원인
 
 첫 화면은 열렸지만 링크 발급과 노래책 API가 500을 반환했습니다. Vercel 로그에는 `This store has been suspended`가 기록됐으며 저장소 관리 API에서 `limits-exceeded-suspended`, `usageQuotaExceeded: true`를 확인했습니다.

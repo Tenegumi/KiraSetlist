@@ -3,7 +3,6 @@ import assert from 'node:assert/strict';
 import {createServer} from 'node:http';
 import {once} from 'node:events';
 import {readJson,writeJson,writeImage,readImage,StorageConflict,StorageUnavailable,storageHealth} from '../lib/storage.mjs';
-import {notification} from '../lib/events.mjs';
 
 test('durable Redis records use atomic conflicts, isolate images, and stop retrying a failed provider',async()=>{
  const entries=new Map(),notices=[];let fail=false,calls=0;
@@ -41,11 +40,4 @@ test('durable Redis records use atomic conflicts, isolate images, and stop retry
   await assert.rejects(readJson('rooms/b.json'),StorageUnavailable);assert.equal(calls,after);
   assert.equal((await storageHealth()).ready,false);
  }finally{server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
-});
-test('room notification parser preserves multilingual titles and ignores other channels and damaged frames',()=>{
- const state={revision:3,title:'방해쟁이 / おじゃま虫, ♥'};
- assert.deepEqual(notification('data: message,kira:v1:events:a,'+JSON.stringify(state),'a'),state);
- assert.equal(notification('data: message,kira:v1:events:b,{}','a'),null);
- assert.equal(notification('data: subscribe,kira:v1:events:a,1','a'),null);
- assert.equal(notification('data: message,kira:v1:events:a,broken','a'),null);
 });

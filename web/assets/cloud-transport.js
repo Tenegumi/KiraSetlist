@@ -1,3 +1,4 @@
+import {eventFrames,notification,validateConnection} from './direct-events.js';
 const params=new URLSearchParams(location.hash.slice(1));
 const room=params.get('room'),owner=params.get('owner'),view=params.get('view');
 const token=owner||view;
@@ -38,6 +39,7 @@ class CloudHub{
   });
  }
  add(listener){
+  if(this.terminal){queueMicrotask(()=>listener.onerror?.({error:this.lastError}));return ()=>{};}
   this.listeners.add(listener);if(this.snapshot)queueMicrotask(()=>{if(this.listeners.has(listener))listener.onmessage?.({data:JSON.stringify(this.snapshot)});});
   if(!this.running){this.running=true;this.connect();}
   return ()=>{this.listeners.delete(listener);if(!this.listeners.size){this.closed=true;this.abort?.abort();clearTimeout(this.timer);this.running=false;}};
@@ -51,28 +53,34 @@ class CloudHub{
   });return this.chain;
  }
  async connect(){
-  this.closed=false;this.connecting=true;this.reconnectRequested=false;this.abort=new AbortController();let reader;
+  if(this.closed)return;
+  this.connecting=true;this.reconnectRequested=false;this.abort=new AbortController();let reader;
   let watchdog=setTimeout(()=>this.abort.abort(),15000);
-  const alive=()=>{clearTimeout(watchdog);watchdog=setTimeout(()=>this.abort.abort(),35000);};
   try{
-   if(!room||!token)throw Error('저장한 독 주소로 들어와 주세요.');
-   const response=await nativeFetch(apiUrl('events'),{headers:{Authorization:`Bearer ${token}`,Accept:'text/event-stream'},cache:'no-store',signal:this.abort.signal});
-   if(!response.ok)throw await responseError(response);
+   if(!room||!token){const error=Error('저장한 독 주소로 들어와 주세요.');error.terminal=true;throw error;}
+   if(!this.connection){
+    const handshake=await nativeFetch(apiUrl('connection'),{headers:{Authorization:`Bearer ${token}`},cache:'no-store',signal:this.abort.signal});
+    if(!handshake.ok)throw await responseError(handshake);
+    this.connection=validateConnection(await handshake.json());
+   }
+   const response=await nativeFetch(this.connection.url,{method:'POST',headers:{Authorization:`Bearer ${this.connection.token}`,Accept:'text/event-stream'},cache:'no-store',signal:this.abort.signal});
+   if(!response.ok){const error=await responseError(response);if(response.status===400)error.terminal=true;throw error;}
    if(!response.body)throw Error('서버 연결을 확인해 주세요.');
-   alive();
-   reader=response.body.getReader();const decoder=new TextDecoder();let pending='',event='message',lines=[];
+   reader=response.body.getReader();let subscribed=false;
    this.delay=1000;
-   while(!this.closed){
-    const {value,done}=await reader.read();if(done)break;
-    alive();
-    pending+=decoder.decode(value,{stream:true});const complete=pending.split('\n');pending=complete.pop();
-    for(let line of complete){
-     line=line.replace(/\r$/,'');
-     if(line===''){
-      if(lines.length){const data=JSON.parse(lines.join('\n'));if(event==='message')await this.accept(data);else if(event==='connection-error'){const error=Error(data.error);error.terminal=!!data.terminal;throw error;}}
-      event='message';lines=[];
-     }else if(line.startsWith('event:'))event=line.slice(6).trim();
-     else if(line.startsWith('data:'))lines.push(line.slice(5).trimStart());
+   for await(const frame of eventFrames(reader)){
+    if(this.closed)break;
+    if(frame===`subscribe,${this.connection.channel},1`&&!subscribed){
+     subscribed=true;
+     // Subscribe BEFORE snapshot: any concurrent change is buffered in the stream.
+     const current=await nativeFetch(apiUrl('state'),{headers:{Authorization:`Bearer ${token}`},cache:'no-store',signal:this.abort.signal});
+     if(!current.ok)throw await responseError(current);
+     await this.accept(await current.json());
+     clearTimeout(watchdog);watchdog=null;
+    }else{
+     const data=notification(frame,this.connection.channel);
+     if(data?.type==='room-keys-revoked'){const error=Error('이 OBS 주소는 폐기됐어요. 첫 화면에서 새 링크를 발급해 주세요.');error.terminal=true;throw error;}
+     if(data)await this.accept(data);
     }
    }
    this.delay=500+Math.floor(Math.random()*500);
@@ -80,14 +88,14 @@ class CloudHub{
    if(!this.closed){
     for(const listener of this.listeners)listener.onerror?.({error});
     const el=document.getElementById('connection');if(el)el.textContent=`${error.message}${this.snapshot?' · 방송 화면은 마지막 곡을 유지해요.':''}`;
-    if(error.terminal){this.closed=true;this.abort?.abort();clearTimeout(this.timer);}
+    if(error.terminal){this.lastError=error;this.terminal=true;this.closed=true;this.abort?.abort();clearTimeout(this.timer);}
     else this.delay=navigator.onLine===false?5000:Math.max(error.retryAfter*1000||0,Math.min(this.delay*2,60000));
    }
   }finally{clearTimeout(watchdog);await reader?.cancel().catch(()=>{});this.connecting=false;}
   if(!this.closed&&this.listeners.size)this.timer=setTimeout(()=>this.connect(),this.reconnectRequested?0:this.delay);
  }
 }
-function sharedHub(){if(!hub||hub.closed)hub=new CloudHub();return hub;}
+function sharedHub(){if(!hub||(hub.closed&&!hub.terminal))hub=new CloudHub();return hub;}
 window.kiraCloud.subscribe=(id,key,listener)=>id===room&&key===view?sharedHub().add(listener):null;
 class CloudEvents{
  constructor(){
