@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+const base='https://kira-setlist-web.vercel.app';
+const c=await (await fetch(base+'/api?op=rooms',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'})).json();
+const api=async(op,body)=>{const r=await fetch(base+'/api?'+new URLSearchParams({op,room:c.room}),{method:'POST',headers:{Authorization:`Bearer ${c.owner}`,'Content-Type':'application/json'},body:JSON.stringify(body)});return {status:r.status,data:await r.json()};};
+const added=await api('action',{type:'custom-add',title:'아트 업로드 확인',artist:'테스트'});assert.equal(added.status,200);
+const songId=added.data.queue[0].songId;
+assert.equal((await api('artwork',{songId,dataUrl:'data:image/png;base64,YmFk'})).status,400);
+const uploaded=await api('artwork',{songId,dataUrl:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aHd8AAAAASUVORK5CYII='});assert.equal(uploaded.status,200,JSON.stringify(uploaded.data));
+const image=uploaded.data.artworkOverrides[songId].image;assert.ok(image.startsWith('/api?'));assert.ok(!JSON.stringify(uploaded.data).includes('data:image/'));
+const response=await fetch(base+image);assert.equal(response.status,200);assert.equal(response.headers.get('content-type'),'image/png');assert.ok((await response.arrayBuffer()).byteLength>0);
+const unauthorized=new URL(base+image);unauthorized.searchParams.delete('key');assert.equal((await fetch(unauthorized)).status,403);
+console.log('PASS: image format validation, private image storage, authenticated read, compact state payload.');

@@ -6,6 +6,14 @@
 
 **[직접 연결하는 수동 ZIP](https://github.com/Tenegumi/KiraSetlist/releases/download/v1.2.1/KiraSetlist-Manual-1.2.1.zip)** · **[그림으로 따라 하기](docs/INSTALL.md)** · [자동 설치를 원한다면](docs/AUTO-INSTALL.md)
 
+## 설치 없이 웹으로 써보기
+
+**[키라 웹 셋리스트 열기](https://kira-setlist-web.vercel.app)** · **[웹 버전 그림 가이드](https://kira-setlist-web.vercel.app/guide)** · [OBS 조작 방식 미리보기](https://kira-setlist-web.vercel.app/demo)
+
+첫 화면에서 **내 방송 공간 만들기**를 누르고, 생성된 주소를 OBS의 **사용자 지정 브라우저 독**과 **브라우저 소스**에 각각 붙여요. 로컬 서버나 ZIP 설치 없이 노래책·직접 추가·곡 넘기기·원본/DLC 전환을 사용할 수 있어요. 목록은 서버에 저장되고 조작 주소는 본인만 보관해요. 현재는 노래책 등록본 211곡을 사용하며 **Notion 자동 동기화는 연결 전**이에요. 인터넷 연결이 필요해요.
+
+웹 버전은 먼저 사용해 보는 체험 버전이고, 아래 수동 ZIP은 기존 Windows 설치 방식이에요. 웹 버전 소스와 배포 방법은 [web/README.md](web/README.md)에 있어요.
+
 ## 먼저, OBS에 직접 붙여요
 
 1. 위의 **수동 ZIP**을 받고 **모두 압축 풀기**를 해요.
