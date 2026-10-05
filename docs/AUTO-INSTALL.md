@@ -2,7 +2,7 @@
 
 OBS는 익숙해도 설치 파일이 낯설 수 있어요. **ZIP을 풀고 버튼 하나를 누르면**, 그다음부터는 OBS 안에서 조작할 수 있어요.
 
-[설치 ZIP 받기](https://github.com/Tenegumi/KiraSetlist/releases/download/v1.2.1/KiraSetlist-Integrated-1.2.1.zip) · [동영상으로 보기](https://github.com/Tenegumi/KiraSetlist/releases/download/v1.2.1/kira-integrated-tutorial.mp4)
+[설치 ZIP 받기](https://github.com/Tenegumi/KiraSetlist/releases/download/v1.2.2/KiraSetlist-Integrated-1.2.2.zip) · [동영상으로 보기](https://github.com/Tenegumi/KiraSetlist/releases/download/v1.2.1/kira-integrated-tutorial.mp4)
 
 먼저 추천하는 방법은 [직접 연결하는 수동 설치](INSTALL.md)예요. 설치 프로그램 없이 연결하고 싶다면 **[수동 ZIP과 그림 안내](MANUAL.md)**를 골라 주세요. 자동 설치가 무엇을 바꾸는지는 [설치 검증 안내](INSTALL-CHECK.md)에 정리했어요.
 
@@ -12,7 +12,7 @@ OBS는 익숙해도 설치 파일이 낯설 수 있어요. **ZIP을 풀고 버�
 
 ## 2. 설치 ZIP을 받고 압축을 풀어요
 
-위의 **설치 ZIP 받기**를 눌러요. 받은 파일 이름은 **KiraSetlist-Integrated-1.2.1.zip**이에요. ZIP을 우클릭하고 **모두 압축 풀기**를 해 주세요.
+위의 **설치 ZIP 받기**를 눌러요. 받은 파일 이름은 **KiraSetlist-Integrated-1.2.2.zip**이에요. ZIP을 우클릭하고 **모두 압축 풀기**를 해 주세요.
 
 
 

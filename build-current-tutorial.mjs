@@ -40,7 +40,7 @@ let scenes=[
 // Manual setup is the default path; automatic installation is optional, near the end.
 for(const file of ['dock.svg','source.svg'])fs.copyFileSync(path.join(root,'docs/manual-assets',file),path.join(dir,'assets','manual-'+file));
 const manual=[
- s('직접 연결 · 1','수동 ZIP부터 받아 줘','GitHub의 직접 연결하는 수동 ZIP을 받아 줘. 설치 프로그램 없이 연결할 거야.',null,['파일: KiraSetlist-Manual-1.2.1.zip','Source code 대신 수동 ZIP 받기']),
+ s('직접 연결 · 1','수동 ZIP부터 받아 줘','GitHub의 직접 연결하는 수동 ZIP을 받아 줘. 설치 프로그램 없이 연결할 거야.',null,['파일: KiraSetlist-Manual-1.2.2.zip','Source code 대신 수동 ZIP 받기']),
  s('직접 연결 · 2','압축을 풀고 폴더를 정해 줘','문서 안에 폴더를 만들고 전부 압축 해제해. 연결한 다음에는 폴더를 옮기지 말아 줘.',null,['모두 압축 풀기 → 폴더 보관','kira-unified.lua · runtime · public · data']),
  s('직접 연결 · 3','OBS에 스크립트를 등록해 줘','도구, 스크립트, 더하기를 누르고 kira-unified.lua를 골라 줘. OBS와 같이 실행돼.',null,['도구 → 스크립트 → +','압축 푼 폴더 / kira-unified.lua']),
  s('직접 연결 · 4','사용자 지정 브라우저 독 열기','독 메뉴의 사용자 지정 브라우저 독을 열어 줘. 이게 방송 중 조작할 창이야.','manual-dock.svg',['독 → 사용자 지정 브라우저 독','독 이름: 키라 통합 셋리스트']),

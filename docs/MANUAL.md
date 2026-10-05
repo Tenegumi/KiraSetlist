@@ -1,6 +1,6 @@
 # 설치 버튼 없이, OBS에 직접 붙여요
 
-**[수동 ZIP 받기](https://github.com/Tenegumi/KiraSetlist/releases/download/v1.2.1/KiraSetlist-Manual-1.2.1.zip)**
+**[수동 ZIP 받기](https://github.com/Tenegumi/KiraSetlist/releases/download/v1.2.2/KiraSetlist-Manual-1.2.2.zip)**
 
 원본과 앰프 DLC 기능은 같아요. 이 ZIP에는 설치 프로그램이 없어요. 내가 사용하는 장면에 스크립트·독·방송 소스를 하나씩 등록하는 방식이에요. OBS는 컴퓨터에 설치되어 있어야 해요.
 

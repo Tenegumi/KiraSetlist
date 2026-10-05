@@ -43,7 +43,7 @@
 ## 배포·가이드 재생성
 
 1. Windows에서 사용 중인 Node 24 실행 파일을 `app/runtime/node.exe`에 복사하고 라이선스를 함께 둡니다.
-2. `node package-release.mjs`로 설치 폴더를 만들고 `dist/KiraSetlist-Integrated-1.2.1`을 ZIP으로 압축합니다.
+2. `node package-release.mjs`로 설치 폴더를 만들고 `dist/KiraSetlist-Integrated-1.2.2`을 ZIP으로 압축합니다.
 3. `capture-current-guide.mjs`는 임시 데이터·헤드리스 Edge에서 앱 화면을 캡처합니다. 실행 중인 OBS의 곡 목록이나 PC 커서를 조작하지 않습니다.
 4. `build-current-tutorial.mjs` → `export-current-tutorial.mjs`는 안내 이미지·MP4·GIF·SRT를 만듭니다. Playwright와 FFmpeg가 필요합니다. Playwright 모듈 경로는 `KIRA_PLAYWRIGHT_PATH`로 지정할 수 있습니다.
 

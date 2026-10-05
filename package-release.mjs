@@ -1,5 +1,5 @@
 import fs from 'node:fs';import path from 'node:path';import {createHash} from 'node:crypto';import {fileURLToPath} from 'node:url';
-const root=path.dirname(fileURLToPath(import.meta.url)),version='1.2.1';
+const root=path.dirname(fileURLToPath(import.meta.url)),version=JSON.parse(fs.readFileSync(path.join(root,'app/package.json'),'utf8')).version;
 const installer=path.join(root,`dist/KiraSetlist-Integrated-${version}`),manual=path.join(root,`dist/KiraSetlist-Manual-${version}`);
 fs.mkdirSync(installer,{recursive:true});fs.mkdirSync(manual,{recursive:true});
 for(const name of ['설치하기.exe','install.ps1','install.mjs','obs-config.mjs','install.cmd','README.md'])fs.copyFileSync(path.join(root,name),path.join(installer,name));

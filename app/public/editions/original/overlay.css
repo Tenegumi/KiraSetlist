@@ -5,3 +5,24 @@
 .setlist{transform:scale(.75);transform-origin:top right}.caption{transform:scale(.85);transform-origin:bottom left}
 .current-only .current{border-bottom:0;padding-bottom:0}.no-next .previous-list{border-bottom:0;padding-bottom:0}
 :root{color-scheme:normal}html,body{background:transparent!important}
+
+/* Bold original: a title-led glass panel, with compact rows and no artists. */
+@font-face{font-family:'Kira Original';src:url('../../fonts/NotoSansKR.ttf') format('truetype');font-weight:100 900;font-style:normal;font-display:swap}
+.stage{font-family:'Kira Original','Malgun Gothic',sans-serif}
+.setlist{padding:28px;border-radius:25px}
+.panel-top{font-size:17px;font-weight:700;letter-spacing:.08em;margin-bottom:22px}
+.now-label{font-size:18px;font-weight:800;letter-spacing:.08em;margin-bottom:15px}
+.current{grid-template-columns:78px minmax(0,1fr);gap:18px;padding-bottom:22px}
+.current .disc{width:78px;height:78px}
+.current h1{font-size:46px;font-weight:900;line-height:1.16;letter-spacing:-.045em;word-break:keep-all}
+:root .previous-label,.setlist .next-label{font-size:18px;font-weight:700;letter-spacing:.07em;margin:20px 0 9px;color:var(--accent)}
+.previous-list{padding-bottom:0;border-bottom:0}
+.setlist .next-row{grid-template-columns:29px minmax(0,1fr);gap:12px;align-items:center;min-height:70px;padding:11px 14px;margin-top:7px;background:#ffffff0c;border-left:3px solid #b995db}
+.light .setlist .next-row{background:#4024500d;border-left-color:#9364b5}
+.setlist .next-number,.previous-list .next-number{font-size:22px;font-weight:700;padding-top:0;color:var(--accent)}
+.setlist .next-title,.previous-list .next-title{font-size:31px;font-weight:800;line-height:1.32;letter-spacing:-.025em;color:var(--ink);-webkit-line-clamp:2;word-break:keep-all}
+.setlist .empty-slot .next-title{font-size:26px;font-weight:600;color:var(--muted)}
+.previous-empty{font-size:24px;padding:11px 14px;font-weight:600}
+.setlist .panel-footer{font-size:14px;letter-spacing:.06em;margin-top:20px;padding-top:15px}
+.setlist .panel-footer #session-title{font-size:14px;font-weight:600}
+.caption h2{font-size:63px;font-weight:900;line-height:1.16;word-break:keep-all;text-shadow:0 2px 3px #140b24,1px 0 1px #140b24,-1px 0 1px #140b24}
