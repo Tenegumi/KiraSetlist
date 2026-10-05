@@ -28,7 +28,11 @@ export async function serveEvents(req,res,id,token,readRoom) {
   const decoder=new TextDecoder();let pending='';
   const consume=chunk=>{
    pending+=decoder.decode(chunk,{stream:true});const lines=pending.split('\n');pending=lines.pop();
-   for(const line of lines){const state=notification(line.replace(/\r$/,''),id);if(state&&state.revision>revision){revision=state.revision;send(state);}}
+   for(const line of lines){
+    const state=notification(line.replace(/\r$/,''),id);
+    if(state?.type==='room-keys-revoked'){res.write('event: connection-error\ndata: {"error":"이 OBS 주소는 폐기됐어요. 첫 화면에서 새 링크를 발급해 주세요.","terminal":true}\n\n');close();return;}
+    if(state&&state.revision>revision){revision=state.revision;send(state);}
+   }
   };
   consume(first.value);
   while(!abort.signal.aborted){const {done,value}=await reader.read();if(done)break;consume(value);}

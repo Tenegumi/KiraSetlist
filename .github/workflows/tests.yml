@@ -18,4 +18,5 @@ jobs:
       - name: Web room authorization and catalog merge tests
         run: |
           npm --prefix web ci
+          npm --prefix web run build
           npm --prefix web test
