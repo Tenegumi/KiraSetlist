@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';import test from 'node:test';
+import {freshState,applyAction} from '../lib/state.mjs';
+import {sessionWindow as rootWindow} from '../public/session-view.js';
+import {sessionWindow as ampWindow} from '../public/editions/amp/session-view.js';
+import {sessionWindow as originalWindow} from '../public/editions/original/session-view.js';
+const songs=Array.from({length:17},(_,i)=>({id:'song-'+(i+1),title:'곡 '+(i+1)}));
+function fixture(){const s=freshState();s.queue=songs.map((song,i)=>({id:'entry-'+(i+1),songId:song.id,status:i<12?'done':i===13?'current':'waiting',...(i<12?{completedAt:i+1}:{})}));s.currentId='entry-14';s.revision=30;return s;}
+for(const [edition,window] of [['root',rootWindow],['amp',ampWindow],['original',originalWindow]]){
+ test(edition+': song 14 only previews 15/16/17, even if 13 was skipped',()=>{const s=fixture(),before=structuredClone(s),view=window(s,3);assert.deepEqual(view.next.map(q=>q.id),['entry-15','entry-16','entry-17']);assert.deepEqual(view.upcomingSongs.map(q=>q.id),['entry-15','entry-16','entry-17']);assert.ok(!view.upcomingSongs.some(q=>q.id==='entry-13'||q.id===s.currentId));assert.equal(view.previous.id,'entry-12');assert.deepEqual(s,before);});
+ test(edition+': skip completed future entries and follow actual queue positions after reordering',()=>{const s=fixture();s.queue[15].status='done';assert.deepEqual(window(s,3).next.map(q=>q.id),['entry-15','entry-17']);const [fifteen]=s.queue.splice(14,1);s.queue.splice(0,0,fifteen);assert.deepEqual(window(s,3).next.map(q=>q.id),['entry-17']);});
+ test(edition+': the end does not wrap to skipped entries and a new lineup still shows its first waiting songs',()=>{const s=fixture();s.queue[13].status='done';s.queue[13].completedAt=31;s.queue[14].status='done';s.queue[14].completedAt=32;s.queue[15].status='done';s.queue[15].completedAt=33;s.queue[16].status='done';s.queue[16].completedAt=34;s.currentId=null;assert.deepEqual(window(s).upcomingSongs,[]);assert.equal(s.queue[12].status,'waiting');assert.deepEqual(window({queue:[{id:'first',status:'waiting'},{id:'second',status:'waiting'}],currentId:null}).next.map(q=>q.id),['first','second']);assert.deepEqual(window({queue:[],currentId:null}).next,[]);});
+}
+test('manually jumping from 13 to 14 preserves 13 but completion advances to 15; undo restores 14',()=>{
+ let s=fixture();s.currentId='entry-13';s.queue[12].status='current';s.queue[13].status='waiting';s=applyAction(s,{type:'start',id:'entry-14'},songs);assert.equal(s.queue[12].status,'waiting');assert.deepEqual(rootWindow(s,3).next.map(q=>q.id),['entry-15','entry-16','entry-17']);s=applyAction(s,{type:'complete'},songs);assert.equal(s.currentId,'entry-15');assert.equal(s.queue[12].status,'waiting');s=applyAction(s,{type:'undo'},songs);assert.equal(s.currentId,'entry-14');assert.equal(s.queue[12].status,'waiting');assert.equal(s.queue[13].status,'current');
+});
+test('completion never wraps to older waiting songs at the end of the lineup',()=>{let s=fixture();s=applyAction(s,{type:'start',id:'entry-17'},songs);s=applyAction(s,{type:'complete'},songs);assert.equal(s.currentId,null);assert.equal(s.queue[12].status,'waiting');assert.deepEqual(rootWindow(s,3).upcomingSongs,[]);});

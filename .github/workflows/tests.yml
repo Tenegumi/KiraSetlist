@@ -15,8 +15,11 @@ jobs:
           New-Item -ItemType Directory -Force app/runtime | Out-Null
           Copy-Item -LiteralPath (Get-Command node).Source -Destination app/runtime/node.exe
       - run: npm test
+      - name: Original app regression tests
+        run: npm run test:original
       - name: Web room authorization and catalog merge tests
         run: |
           npm --prefix web ci
           npm --prefix web run build
           npm --prefix web test
+          npm --prefix web audit --audit-level=high

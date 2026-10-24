@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>키라 통합 셋리스트</title><link rel="stylesheet" href="control.css"><script type="module" src="control.js"></script></head>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>키라 통합 셋리스트</title><link rel="stylesheet" href="control.css"><script type="module" src="control.js"></script><link rel="stylesheet" href="/history-carousel.css"></head>
 <body><main class="app">
  <header class="app-header"><div><span class="eyebrow">KIRA / ORIGINAL + AMPLIFIER DLC</span><h1>키라 통합 셋리스트</h1></div><div class="header-actions"><span class="connection" id="connection" role="status">연결 중</span><a class="quiet" href="/api/export" download>백업</a><button id="copy-overlay" class="quiet">OBS 주소 복사</button></div></header>
  <section class="edition-picker" aria-label="방송 디자인 버전"><div><strong>방송 디자인</strong><span id="edition-status">앰프 DLC</span></div><div class="edition-buttons"><button type="button" data-edition="original" aria-pressed="false">원본</button><button type="button" data-edition="amp" aria-pressed="true">앰프 DLC</button></div><p>같은 곡 목록으로 전환 · 크기와 투명도는 버전별 저장</p></section>
@@ -8,9 +8,9 @@
  <section class="preview-section" aria-label="방송 미리보기"><div class="preview"><iframe src="/overlay?preview=1" title="키라 방송 오버레이 미리보기"></iframe><a href="/overlay?preview=1" target="_blank" rel="noopener" class="preview-expand">크게 보기 ↗</a></div>
   <details class="appearance"><summary>화면 설정</summary><div class="settings-grid">
    <div class="settings-heading">우측 셋리스트</div>
-   <label>표시 구성<select id="display-preset"><option value="current">현재 곡만</option><option value="next">현재 곡 + 다음 2곡</option><option value="full">이전 1곡 + 현재 곡 + 다음 2곡</option><option value="custom">직접 설정</option></select></label>
-   <label class="switch"><input id="showPrevious" type="checkbox" checked>이전 곡 1개 표시</label>
-   <label>다음 곡 수<select id="nextSongs" data-number><option value="0">표시 안 함</option><option value="1">1곡</option><option value="2" selected>2곡</option><option value="3">3곡</option><option value="4">4곡</option><option value="5">5곡</option></select></label>
+   <label>표시 구성<select id="display-preset"><option value="full" selected>현재 곡 + 이전 2곡 + 다음 2곡 · 자동 슬라이드</option><option value="full3">현재 곡 + 이전 3곡 + 다음 3곡 · 자동 슬라이드</option><option value="current">현재 곡만</option><option value="next">현재 곡 + 다음 2곡 · 자동 슬라이드</option><option value="custom">직접 설정</option></select></label>
+   <label class="switch"><input id="showPrevious" type="checkbox" checked>이전 곡 영역 표시</label>
+   <label>이전 곡 표시 줄 수<select id="previousSongs" data-number><option value="1">1곡</option><option value="2" selected>2곡</option><option value="3">3곡</option><option value="4">4곡</option><option value="5">5곡</option></select></label><label class="switch"><input id="previousSlide" type="checkbox" checked>이전 곡 자동 슬라이드</label><p class="history-hint">줄 수를 각각 선택할 수 있어요. 자동 슬라이드를 끄면 최근 완료 곡과 바로 다음 대기 곡을 고정 표시해요. PREVIOUS는 곡 순서를 유지하고 앞 번호만 01부터 연속으로 붙여요.</p><label>다음 곡 표시 줄 수<select id="nextSongs" data-number><option value="0">표시 안 함</option><option value="1" selected>1곡</option><option value="2">2곡</option><option value="3">3곡</option><option value="4">4곡</option><option value="5">5곡</option></select></label><label class="switch"><input id="nextSlide" type="checkbox" checked>다음 곡 자동 슬라이드</label>
    <label>우측 패널 크기 <output id="panelScale-value">75%</output><input id="panelScale" type="range" min="50" max="120" value="75"></label>
    <label>앰프 너비 <output id="panelWidth-value">36%</output><input id="panelWidth" type="range" min="28" max="42" value="36"></label>
    <label>오른쪽 여백 <output id="panelRight-value">60px</output><input id="panelRight" type="range" min="0" max="1700" step="5" value="60"></label>
@@ -23,7 +23,7 @@
   </div></details>
  </section>
  <div class="work-grid"><section class="library-section" aria-labelledby="library-heading"><div class="section-heading"><div><span class="eyebrow">YOUR SONGBOOK</span><h2 id="library-heading">노래책 <span id="book-count"></span></h2></div><button id="missing-filter" class="quiet"></button></div>
-  <label class="search-label"><span class="sr-only">곡명·가수 검색</span><input type="search" id="search" placeholder="곡명, 가수 또는 초성으로 검색" autocomplete="off"></label>
+  <label class="search-label"><span class="sr-only">곡명·가수 검색</span><input type="search" id="search" placeholder="곡명·가수·초성·한글 발음으로 검색" autocomplete="off"></label>
   <div class="genre-tabs" role="group" aria-label="장르 필터"><button data-genre="전체" aria-pressed="true">전체</button><button data-genre="J-pop" aria-pressed="false">J-pop</button><button data-genre="K-pop" aria-pressed="false">K-pop</button><button data-genre="애니메이션" aria-pressed="false">애니메이션</button><button data-genre="보컬로이드" aria-pressed="false">보컬로이드</button><button data-genre="기타" aria-pressed="false">기타</button><button data-genre="직접 등록" aria-pressed="false">직접 등록</button></div>
   <p id="result-count" class="subtle" aria-live="polite"></p><div id="library" class="library"></div>
  </section>

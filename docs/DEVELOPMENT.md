@@ -16,7 +16,11 @@
 | `install.mjs`, `install.ps1`, `Installer.cs` | 데이터 보존 설치와 OBS 등록·설정 백업 |
 | `docs/tutorial-motion/` | 32단계의 재생 가능한 도트 안내 |
 
-원본의 iframe은 `color-scheme:normal`과 투명 html/body를 사용합니다. 어두운 색 구성의 iframe 캔버스가 부모와 다를 때 불투명해지는 Chromium 동작을 피합니다. 두 렌더러는 CSS zoom을 사용하고, DLC의 기울어진 배경과 글자 평면을 분리합니다. LP와 제목 전환은 660ms로 구성돼 있습니다.
+원본의 iframe은 `color-scheme:normal`과 투명 html/body를 사용합니다. 어두운 색 구성의 iframe 캔버스가 부모와 다를 때 불투명해지는 Chromium 동작을 피합니다. 두 렌더러는 CSS zoom을 사용하고, DLC의 기울어진 배경과 글자 평면을 분리합니다. 곡 변경 시 튕기는 전환은 오른쪽 앰프에만 적용하며 왼쪽 LP·제목은 모션 없이 교체합니다.
+
+`app/public/history-carousel.js`가 이전·다음 슬라이드를 각각 관리합니다. PREVIOUS의 제목 흐름은 완료 기록대로 유지하되 숫자는 렌더링 인덱스+1로 표시합니다. 다음 곡은 `session-view.js`에서 현재 위치 뒤의 대기 곡만 고르고, 실제 목록 번호를 표시합니다. 검색은 `song-search.js`와 `search-aliases.js`, 독을 새로고침할 때의 2/1 표시는 `queue-refresh.js`에서 처리합니다.
+
+실제 UI 검증은 Playwright와 Edge가 있는 환경에서 `KIRA_PLAYWRIGHT_PATH`를 Playwright 모듈 파일 경로로 지정하고 `node scripts/verify-hotfix.mjs`를 실행합니다. 임시 데이터·임의의 loopback 포트만 사용합니다. 원래 1·7·9·2·3번 곡의 제목 유지와 01~05 표시, 두 디자인의 독립 슬라이드, 기본 구성과 목록 보존, 서버 호출 없는 검색을 확인합니다. `KIRA_VERIFY_APP_ROOT`로 압축을 푼 수동 ZIP 폴더도 검사할 수 있습니다.
 
 ## 로컬 주소
 
@@ -43,7 +47,7 @@
 ## 배포·가이드 재생성
 
 1. Windows에서 사용 중인 Node 24 실행 파일을 `app/runtime/node.exe`에 복사하고 라이선스를 함께 둡니다.
-2. `node package-release.mjs`로 설치 폴더를 만들고 `dist/KiraSetlist-Integrated-1.2.2`을 ZIP으로 압축합니다.
+2. `node package-release.mjs`로 설치 폴더를 만들고 `dist/KiraSetlist-Integrated-1.2.3`을 ZIP으로 압축합니다.
 3. `capture-current-guide.mjs`는 임시 데이터·헤드리스 Edge에서 앱 화면을 캡처합니다. 실행 중인 OBS의 곡 목록이나 PC 커서를 조작하지 않습니다.
 4. `build-current-tutorial.mjs` → `export-current-tutorial.mjs`는 안내 이미지·MP4·GIF·SRT를 만듭니다. Playwright와 FFmpeg가 필요합니다. Playwright 모듈 경로는 `KIRA_PLAYWRIGHT_PATH`로 지정할 수 있습니다.
 
