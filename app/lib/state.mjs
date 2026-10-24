@@ -1,5 +1,5 @@
 import {randomUUID} from 'node:crypto';
-export const defaultSettings=()=>({theme:'dark',opacity:82,caption:true,captionArt:true,stroke:'#bc8de7',panelWidth:36,rotate:true,rotationSeconds:28,plaid:false,title:'LIVE SESSION',panelScale:80,panelRight:60,panelTop:76,captionScale:100,showPrevious:true,nextSongs:2});
+export const defaultSettings=()=>({theme:'dark',opacity:82,caption:true,captionArt:true,stroke:'#bc8de7',panelWidth:36,rotate:true,rotationSeconds:28,plaid:false,title:'LIVE SESSION',panelScale:80,panelRight:60,panelTop:76,captionScale:100,showPrevious:true,previousSongs:2,nextSongs:1,previousSlide:true,nextSlide:true});
 const baseFreshState=()=>({version:1,revision:0,queue:[],currentId:null,history:[],customSongs:[],settings:defaultSettings()});
 function baseApplyAction(state,action,songs){
  const s=structuredClone(state);s.customSongs??=[];const known=new Set([...songs,...s.customSongs].map(x=>x.id));
@@ -16,18 +16,18 @@ function baseApplyAction(state,action,songs){
    remember();s.customSongs.push(song);s.queue.push({id:randomUUID(),songId:song.id,status:'waiting'});break;
   }
   case 'start':{const e=entry(action.id);if(e.status==='done')throw Error('완료한 곡은 되돌린 후 선택해 주세요.');remember();s.queue.forEach(q=>{if(q.status==='current')q.status='waiting';});e.status='current';s.currentId=e.id;break;}
-  case 'complete':{if(!s.currentId)throw Error('현재 부르는 곡을 먼저 지정해 주세요.');remember();const finished=entry(s.currentId);finished.status='done';finished.completedAt=s.revision+1;const next=s.queue.find(q=>q.status==='waiting');s.currentId=next?.id||null;if(next)next.status='current';break;}
+  case 'complete':{if(!s.currentId)throw Error('현재 부르는 곡을 먼저 지정해 주세요.');remember();const finished=entry(s.currentId);finished.status='done';finished.completedAt=s.revision+1;const next=s.queue.slice(s.queue.indexOf(finished)+1).find(q=>q.status==='waiting');s.currentId=next?.id||null;if(next)next.status='current';break;}
   case 'remove':entry(action.id);remember();s.queue=s.queue.filter(q=>q.id!==action.id);if(s.currentId===action.id)s.currentId=null;break;
   case 'move':{const e=entry(action.id),from=s.queue.indexOf(e),to=Number(action.to);if(!Number.isInteger(to)||to<0||to>=s.queue.length)throw Error('이동 위치가 올바르지 않습니다.');remember();s.queue.splice(from,1);s.queue.splice(to,0,e);break;}
   case 'undo':{const previous=s.history.pop();if(!previous)throw Error('되돌릴 변경이 없습니다.');s.queue=previous.queue;s.currentId=previous.currentId;break;}
   case 'clear':remember();s.queue=[];s.currentId=null;break;
-  case 'settings':{const a=action.settings||{};if(typeof a.stroke==='string'&&/^#[0-9a-f]{6}$/i.test(a.stroke))s.settings.stroke=a.stroke;if(['dark','light'].includes(a.theme))s.settings.theme=a.theme;for(const key of ['caption','captionArt','rotate','plaid','showPrevious'])if(typeof a[key]==='boolean')s.settings[key]=a[key];if(Number.isFinite(a.opacity))s.settings.opacity=Math.min(100,Math.max(0,Math.round(a.opacity)));if(Number.isFinite(a.rotationSeconds))s.settings.rotationSeconds=Math.min(60,Math.max(15,a.rotationSeconds));if(typeof a.title==='string')s.settings.title=a.title.trim().slice(0,48)||'LIVE SESSION';for(const [key,min,max] of [['panelWidth',28,42],['panelScale',50,120],['panelRight',0,1700],['panelTop',0,1000],['captionScale',50,120],['nextSongs',0,5]])if(Number.isFinite(a[key]))s.settings[key]=Math.min(max,Math.max(min,Math.round(a[key])));break;}
+  case 'settings':{const a=action.settings||{};if(typeof a.stroke==='string'&&/^#[0-9a-f]{6}$/i.test(a.stroke))s.settings.stroke=a.stroke;if(['dark','light'].includes(a.theme))s.settings.theme=a.theme;for(const key of ['caption','captionArt','rotate','plaid','showPrevious','previousSlide','nextSlide'])if(typeof a[key]==='boolean')s.settings[key]=a[key];if(Number.isFinite(a.opacity))s.settings.opacity=Math.min(100,Math.max(0,Math.round(a.opacity)));if(Number.isFinite(a.rotationSeconds))s.settings.rotationSeconds=Math.min(60,Math.max(15,a.rotationSeconds));if(typeof a.title==='string')s.settings.title=a.title.trim().slice(0,48)||'LIVE SESSION';for(const [key,min,max] of [['panelWidth',28,42],['panelScale',50,120],['panelRight',0,1700],['panelTop',0,1000],['captionScale',50,120],['nextSongs',0,5],['previousSongs',1,5]])if(Number.isFinite(a[key]))s.settings[key]=Math.min(max,Math.max(min,Math.round(a[key])));break;}
   default:throw Error('지원하지 않는 동작입니다.');
  }
  s.revision++;return s;
 }
 
-export const originalDefaults=()=>({"theme":"dark","opacity":88,"caption":true,"rotate":true,"rotationSeconds":15,"plaid":true,"title":"LIVE SESSION","panelScale":77,"panelRight":90,"panelTop":70,"captionScale":120,"showPrevious":true,"nextSongs":2});
+export const originalDefaults=()=>({"theme":"dark","opacity":88,"caption":true,"rotate":true,"rotationSeconds":15,"plaid":true,"title":"LIVE SESSION","panelScale":77,"panelRight":90,"panelTop":70,"captionScale":120,"showPrevious":true,"previousSongs":2,"nextSongs":1,"previousSlide":true,"nextSlide":true});
 export function hydrateState(input){
  const s=structuredClone(input),edition=['original','amp'].includes(s.edition)?s.edition:'amp';
  const appearance=s.appearances||{};s.edition=edition;

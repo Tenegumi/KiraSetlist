@@ -1,4 +1,8 @@
-import {sessionWindow} from './session-view.js';import {fallbackArtwork,artworkImage} from './artwork-view.js';import {nextSongCount} from './overlay-layout.js';import {dlcLayout} from './dlc-layout.js';import {drawSignature} from './signature.js';
+import {sessionWindow,previousSongCount} from './session-view.js';
+import {createHistoryCarousel} from '../../history-carousel.js';
+const historyCarousel=createHistoryCarousel(document.getElementById('previous-list'));
+const nextCarousel=createHistoryCarousel(document.getElementById('next-list'));
+import {fallbackArtwork,artworkImage} from './artwork-view.js';import {nextSongCount} from './overlay-layout.js';import {dlcLayout} from './dlc-layout.js';import {drawSignature} from './signature.js';
 const $=id=>document.getElementById(id),stage=$('kira-dlc'),studio=stage.querySelector('.studio'),panel=stage.querySelector('.amp');
 document.body.classList.toggle('preview',new URLSearchParams(location.search).has('preview'));
 const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -12,12 +16,12 @@ function paint(state){
  studio.classList.toggle('spinning',!!song&&settings.rotate);studio.classList.toggle('no-current',!song);$('caption').hidden=!settings.caption||!song;$('record-pack').hidden=settings.captionArt===false;$('plaid').hidden=!settings.plaid;
  $('counter').textContent=`${String(index+1).padStart(2,'0')} / ${String(state.queue.length).padStart(2,'0')}`;$('song-title').textContent=song?.title||'잠시 후 시작됩니다';$('song-artist').textContent=song?.artist||'';$('caption-title').textContent=song?.title||'';$('caption-artist').textContent=song?.artist||'';$('session-title').textContent=settings.title||'KIRA LIVE SESSION';
  const image=artworkImage(song);if(image!==lastImage){for(const id of ['panel-art','caption-art']){const img=$(id);img.hidden=false;img.onerror=()=>{if(img.getAttribute('src')!==fallbackArtwork){img.src=fallbackArtwork;img.alt='키라 기본 앨범 아트';}else img.hidden=true;};img.src=image;img.alt=image===fallbackArtwork?'키라 기본 앨범 아트':'현재 곡 앨범 아트';}lastImage=image;}
- const count=nextSongCount(settings),{previous,next}=sessionWindow(state,count);$('previous-section').hidden=settings.showPrevious===false;$('next-section').hidden=count===0;
- const row=q=>{const s=state.songs.find(s=>s.id===q.songId),n=state.queue.indexOf(q)+1;return `<div class="queue-row"><span class="queue-num">${String(n).padStart(2,'0')}</span><p class="queue-title">${esc(s.title)}</p></div>`;};
- $('previous-list').innerHTML=previous?row(previous):'<div class="queue-row"><span class="queue-num">—</span><p class="queue-title">아직 완료한 곡이 없어요</p></div>';
- $('next-list').innerHTML=Array.from({length:count},(_,i)=>next[i]?row(next[i]):'<div class="queue-row"><span class="queue-num">—</span><p class="queue-title">대기 곡이 없어요</p></div>').join('');
+ const count=nextSongCount(settings),{previousSongs,upcomingSongs}=sessionWindow(state,count);$('previous-section').hidden=previousSongCount(settings)===0;$('next-section').hidden=count===0;
+ const row=(q,number)=>{const s=state.songs.find(s=>s.id===q.songId),n=number??(state.queue.indexOf(q)+1);return `<div class="queue-row"><span class="queue-num">${String(n).padStart(2,'0')}</span><p class="queue-title">${esc(s.title)}</p></div>`;};
+ historyCarousel.render(previousSongs,{rows:previousSongCount(settings),startIndex:Math.max(0,previousSongs.length-previousSongCount(settings)),autoSlide:settings.previousSlide!==false,row:(q,i)=>row(q,i+1),empty:'<div class="history-empty">이전 곡이 없어요</div>'});
+ nextCarousel.render(upcomingSongs,{rows:count,autoSlide:settings.nextSlide!==false,row:q=>row(q),empty:'<div class="history-empty">대기 곡이 없어요</div>'});
  drawSignature(studio,settings.stroke||'#bc8de7');placePanel();
 }
-function receive(state){snapshot=state;const changed=rendered&&lastCurrentId!==state.currentId;lastCurrentId=state.currentId;rendered=true;if(changed&&!matchMedia('(prefers-reduced-motion: reduce)').matches){clearTimeout(swapTimer);clearTimeout(settleTimer);studio.classList.remove('change-in');void studio.offsetWidth;studio.classList.add('change-in');swapTimer=setTimeout(()=>{swapTimer=null;paint(snapshot)},90);settleTimer=setTimeout(()=>{studio.classList.remove('change-in');settleTimer=null},680);}else if(!swapTimer)paint(state);}
+function receive(state){snapshot=state;const changed=rendered&&lastCurrentId!==state.currentId;lastCurrentId=state.currentId;rendered=true;if(changed&&!matchMedia('(prefers-reduced-motion: reduce)').matches){clearTimeout(swapTimer);clearTimeout(settleTimer);panel.classList.remove('change-in');void panel.offsetWidth;panel.classList.add('change-in');swapTimer=setTimeout(()=>{swapTimer=null;paint(snapshot)},90);settleTimer=setTimeout(()=>{panel.classList.remove('change-in');settleTimer=null},680);}else if(!swapTimer)paint(state);}
 const events=new EventSource('/api/events');events.onmessage=e=>receive(JSON.parse(e.data));
 

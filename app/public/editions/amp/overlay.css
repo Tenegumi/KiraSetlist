@@ -100,7 +100,7 @@
 @media(prefers-reduced-motion:reduce){#kira-dlc .change-in .guitar-mark{animation:none}}
 
 /* A single pluck: 90ms tension, snap, then damped vibration. */
-#kira-dlc .change-in .amp{animation:kira-cutout-hit .66s cubic-bezier(.2,.8,.3,1)}
+#kira-dlc .amp.change-in{animation:kira-cutout-hit .66s cubic-bezier(.2,.8,.3,1)}
 #kira-dlc .change-in .now{animation:kira-now-hit .66s cubic-bezier(.16,.88,.3,1)}
 #kira-dlc .change-in .caption{animation:kira-caption-pluck .66s linear}
 #kira-dlc .change-in .caption-copy{animation:kira-copy-release .66s linear}
@@ -119,7 +119,7 @@
 @keyframes kira-label-hit{0%,100%{background:var(--purple);color:#1a1222}24%{background:#f3eaf8;color:#352043;box-shadow:8px 4px 0 var(--red)}45%{background:#c29cea;color:#1a1222;box-shadow:3px 5px 0 #ca2447}75%{background:var(--purple);color:#1a1222}}
 @keyframes kira-signature-string{0%,100%{transform:skewY(0) scaleY(1);filter:drop-shadow(0 2px 1px #160923)}13%{transform:skewY(3deg) scaleY(.72)}24%{transform:skewY(-4deg) scaleY(1.2);filter:drop-shadow(2px 1px 0 #b72b57)}38%{transform:skewY(2.7deg) scaleY(.88)}51%{transform:skewY(-1.6deg) scaleY(1.08)}65%{transform:skewY(.9deg) scaleY(.95)}79%{transform:skewY(-.4deg) scaleY(1.02)}91%{transform:skewY(.15deg) scaleY(1)}}
 #kira-dlc .switch-song:disabled{opacity:.65}
-@media(prefers-reduced-motion:reduce){#kira-dlc .change-in .amp,#kira-dlc .change-in .now,#kira-dlc .change-in .caption,#kira-dlc .change-in .caption-copy,#kira-dlc .change-in .caption .artist,#kira-dlc .change-in .caption .disc,#kira-dlc .change-in .caption .song-title,#kira-dlc .change-in .current-tag,#kira-dlc .change-in .guitar-mark{animation:none}}
+@media(prefers-reduced-motion:reduce){#kira-dlc .amp.change-in,#kira-dlc .change-in .now,#kira-dlc .change-in .caption,#kira-dlc .change-in .caption-copy,#kira-dlc .change-in .caption .artist,#kira-dlc .change-in .caption .disc,#kira-dlc .change-in .caption .song-title,#kira-dlc .change-in .current-tag,#kira-dlc .change-in .guitar-mark{animation:none}}
 
 /* Keep the camera uncovered: only the compact record sleeve and word pieces fill. */
 #kira-dlc .caption{gap:18px;width:60%;max-width:650px;bottom:6.5%;align-items:flex-start}
